@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TeachAnAgent</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --border: #0f3460;
+      --accent: #e94560;
+      --accent-hover: #ff6b81;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --text: #e8e8e8;
+      --muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 320px;
+      min-height: 200px;
+      font-family: 'SF Pro Display', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .header img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .header .subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-dot.idle { background: var(--muted); }
+    .status-dot.recording { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+    .status-dot.paused { background: var(--yellow); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    .status-label {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .event-count {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      letter-spacing: 0.01em;
+    }
+
+    button:active { transform: scale(0.96); }
+    button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-record {
+      background: linear-gradient(135deg, #e94560, #c0392b);
+      color: #fff;
+    }
+    .btn-record:hover:not(:disabled) {
+      background: linear-gradient(135deg, #ff6b81, #e94560);
+    }
+
+    .btn-pause {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+    }
+    .btn-pause:hover:not(:disabled) {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .btn-stop {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-stop:hover:not(:disabled) {
+      background: var(--border);
+    }
+
+    .btn-export {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-export:hover:not(:disabled) {
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+    .btn-export:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .footer {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="" />
+    <div>
+      <h1>TeachAnAgent</h1>
+      <div class="subtitle">Record actions to train your AI agent</div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-label">
+      <span class="status-dot idle" id="statusDot"></span>
+      <span id="statusText">Ready</span>
+    </div>
+    <span class="event-count" id="eventCount">0 events</span>
+  </div>
+
+  <div class="controls">
+    <button class="btn-record" id="btnRecord" title="Start recording">
+      ⏺ Record
+    </button>
+    <button class="btn-pause" id="btnPause" title="Pause" disabled>
+      ⏸ Pause
+    </button>
+    <button class="btn-stop" id="btnStop" title="Stop" disabled>
+      ⏹ Stop
+    </button>
+  </div>
+
+  <button class="btn-export" id="btnExport" disabled>
+    📥 Export JSON
+  </button>
+
+  <div class="footer">
+    Powered by <a href="https://github.com/Airpote/ClawSurf" target="_blank">ClawSurf</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

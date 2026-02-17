@@ -2,7 +2,8 @@
 set -euo pipefail
 
 PROFILE_DIR="$HOME/snap/chromium/common/clawsurf-profile"
-EXT_DIR="$HOME/snap/chromium/common/clawsurf-relay-extension"
+EXT_RELAY="$HOME/snap/chromium/common/clawsurf-relay-extension"
+EXT_TEACH="$HOME/snap/chromium/common/clawsurf-teachanagent"
 URL="${1:-about:blank}"
 
 mkdir -p "$PROFILE_DIR"
@@ -13,16 +14,25 @@ ARGS=(
   --no-first-run
   --no-default-browser-check
   --class=ClawSurf
-  # On GNOME/Ubuntu Dock under Wayland, Chromium often reports the generic
-  # app id and gets grouped/labeled as "Chromium Web Browser". Prefer X11 so
-  # `StartupWMClass=ClawSurf` in clawsurf.desktop is honored for name/icon.
   --ozone-platform=x11
 )
 
-if [[ "${CLAWSURF_USE_RELAY_EXTENSION:-1}" == "1" && -d "$EXT_DIR" ]]; then
+# Collect extensions to load
+EXT_LIST=""
+for ext in "$EXT_RELAY" "$EXT_TEACH"; do
+  if [[ -d "$ext" ]]; then
+    if [[ -n "$EXT_LIST" ]]; then
+      EXT_LIST="$EXT_LIST,$ext"
+    else
+      EXT_LIST="$ext"
+    fi
+  fi
+done
+
+if [[ -n "$EXT_LIST" ]]; then
   ARGS+=(
-    --disable-extensions-except="$EXT_DIR"
-    --load-extension="$EXT_DIR"
+    --disable-extensions-except="$EXT_LIST"
+    --load-extension="$EXT_LIST"
   )
 fi
 
