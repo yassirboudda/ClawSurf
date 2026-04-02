@@ -1,0 +1,221 @@
+/* AMI Browser – Content inject styles (FAB + full popup chat) */
+
+#ami-browser-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483646;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #c4b5fd, #f9a8d4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(196, 181, 253, .4);
+  transition: transform .15s, box-shadow .15s;
+}
+#ami-browser-fab:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(196, 181, 253, .55);
+}
+#ami-browser-fab img {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+}
+
+/* ── Panel ── */
+#ami-browser-mini {
+  position: fixed;
+  bottom: 78px;
+  right: 20px;
+  z-index: 2147483646;
+  width: 380px;
+  max-height: 520px;
+  border-radius: 18px;
+  background: #faf5ff;
+  border: 1.5px solid #e9d5ff;
+  box-shadow: 0 12px 40px rgba(59, 7, 100, .18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+  animation: csm-slide-up .2s ease-out;
+}
+@keyframes csm-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+.csm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(196,181,253,.15), rgba(249,168,212,.1));
+  border-bottom: 1px solid #f3e8ff;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3b0764;
+}
+.csm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.csm-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+.csm-skill-count {
+  font-size: 10px;
+  font-weight: 500;
+  color: #a855f7;
+  background: #ede9fe;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+.csm-header-btns {
+  display: flex;
+  gap: 2px;
+}
+.csm-header button {
+  width: 26px; height: 26px;
+  border: none; background: transparent;
+  font-size: 14px; color: #a855f7;
+  cursor: pointer; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.csm-header button:hover { background: #ede9fe; }
+
+/* ── Suggestion chips ── */
+#csm-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 12px 4px;
+  border-bottom: 1px solid #f3e8ff;
+}
+.csm-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  background: #fff;
+  color: #7c3aed;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: inherit;
+}
+.csm-chip:hover {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+}
+
+/* ── Messages ── */
+#csm-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 200px;
+  max-height: 320px;
+}
+#csm-messages::-webkit-scrollbar { width: 4px; }
+#csm-messages::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 2px; }
+
+.csm-msg {
+  max-width: 88%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+.csm-msg strong { font-weight: 600; }
+.csm-msg code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  background: rgba(196, 181, 253, .12);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.csm-msg pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  background: #1e1b2e;
+  color: #e9d5ff;
+  padding: 8px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+}
+.csm-user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #c4b5fd, #f9a8d4);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.csm-agent {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid #f3e8ff;
+  color: #3b0764;
+  border-bottom-left-radius: 4px;
+}
+
+/* ── Typing dots ── */
+.csm-typing .csm-dots span {
+  animation: csm-dot-bounce .6s infinite alternate;
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+}
+.csm-typing .csm-dots span:nth-child(2) { animation-delay: .15s; }
+.csm-typing .csm-dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes csm-dot-bounce {
+  from { opacity: .3; transform: translateY(0); }
+  to   { opacity: 1;  transform: translateY(-3px); }
+}
+
+/* ── Composer ── */
+.csm-composer {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+  border-top: 1px solid #f3e8ff;
+}
+.csm-composer input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #e9d5ff;
+  border-radius: 10px;
+  font-size: 13px;
+  outline: none;
+  color: #3b0764;
+  background: #fff;
+  font-family: inherit;
+  transition: border-color .12s;
+}
+.csm-composer input:focus { border-color: #a855f7; box-shadow: 0 0 0 2px rgba(168,85,247,.1); }
+.csm-composer input::placeholder { color: #b8a0d0; }
+.csm-composer button {
+  width: 34px; height: 34px;
+  border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #c4b5fd, #f9a8d4);
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .12s;
+}
+.csm-composer button:hover { opacity: .85; }

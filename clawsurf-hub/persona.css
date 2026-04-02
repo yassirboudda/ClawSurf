@@ -1,0 +1,132 @@
+/* ═══════════════════════════════════════════════════════════
+   persona.css — AMI Browser Persona Page Styles
+   Voxelle pop art pastel theme (lavender, pink, mint)
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 40%, #fdf2f8 100%);
+  color: #1e1b4b; min-height: 100vh;
+}
+
+/* ── Topbar ── */
+.persona-topbar {
+  display: flex; align-items: center; padding: 12px 24px; gap: 12px;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e9d5ff; position: sticky; top: 0; z-index: 100;
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.back-link {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 8px;
+  color: #6b21a8; text-decoration: none; transition: background .15s;
+}
+.back-link:hover { background: #ede9fe; }
+.logo-img { width: 36px; height: 36px; border-radius: 10px; }
+.brand { font-size: 18px; font-weight: 700; color: #4c1d95; line-height: 1.2; }
+.brand-sub { font-size: 11px; color: #7c3aed; font-weight: 400; }
+
+/* ── Main layout ── */
+.persona-main {
+  max-width: 720px; margin: 24px auto; padding: 0 16px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+/* ── Cards ── */
+.card {
+  background: rgba(255,255,255,.92); border: 1px solid #e9d5ff;
+  border-radius: 14px; padding: 18px; backdrop-filter: blur(8px);
+}
+.card-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: #4c1d95;
+  margin-bottom: 12px;
+}
+
+/* ── Import section ── */
+.import-desc { font-size: 12px; color: #6b7280; margin-bottom: 12px; line-height: 1.5; }
+.import-actions {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+.btn-import {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border: 1px solid #e9d5ff; border-radius: 10px;
+  background: #faf5ff; color: #4c1d95; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.btn-import:hover { background: #ede9fe; border-color: #a855f7; }
+.btn-import svg { flex-shrink: 0; color: #7c3aed; }
+
+.import-preview {
+  margin-top: 12px; padding: 14px; background: #f5f3ff;
+  border: 1px dashed #c4b5fd; border-radius: 10px;
+}
+.import-preview h4 { font-size: 13px; color: #4c1d95; margin-bottom: 8px; }
+.import-preview-content { font-size: 12px; color: #3b0764; margin-bottom: 10px; max-height: 200px; overflow-y: auto; }
+.import-preview-content .field-row { display: flex; gap: 8px; margin: 3px 0; }
+.import-preview-content .field-label { font-weight: 600; color: #6b21a8; min-width: 90px; }
+.import-preview-actions { display: flex; gap: 8px; }
+
+/* ── Text / LinkedIn import areas ── */
+#text-import-area textarea, #linkedin-import-area textarea {
+  width: 100%; font-size: 12px; padding: 10px 12px;
+  border: 1px solid #e9d5ff; border-radius: 10px;
+  background: #faf5ff; color: #3b0764; font-family: inherit;
+  resize: vertical; margin-bottom: 10px;
+}
+#text-import-area textarea:focus, #linkedin-import-area textarea:focus {
+  border-color: #a855f7; outline: none;
+}
+
+/* ── Persona grid ── */
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.persona-field { display: flex; flex-direction: column; gap: 3px; }
+.persona-field:not(.half) { grid-column: 1 / -1; }
+.persona-field label {
+  font-size: 10px; color: #6b21a8; text-transform: uppercase;
+  letter-spacing: .5px; font-weight: 600;
+}
+.persona-field input, .persona-field textarea {
+  font-size: 13px; padding: 8px 10px; border: 1px solid #e9d5ff;
+  border-radius: 8px; background: #faf5ff; color: #3b0764;
+  font-family: inherit; transition: border-color .15s;
+}
+.persona-field input:focus, .persona-field textarea:focus {
+  border-color: #a855f7; outline: none;
+}
+
+/* ── Buttons ── */
+.persona-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-pastel {
+  padding: 8px 18px; border: none; border-radius: 10px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff; font-weight: 600; font-size: 13px;
+  cursor: pointer; font-family: inherit; transition: opacity .15s;
+}
+.btn-pastel:hover { opacity: .9; }
+.btn-ghost {
+  padding: 8px 18px; border: 1px solid #e9d5ff; border-radius: 10px;
+  background: transparent; color: #6b21a8; font-weight: 600; font-size: 13px;
+  cursor: pointer; font-family: inherit; transition: all .15s;
+}
+.btn-ghost:hover { background: #ede9fe; }
+.btn-danger { color: #ef4444; border-color: #fecaca; }
+.btn-danger:hover { background: #fef2f2; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  background: #4c1d95; color: #fff; box-shadow: 0 4px 20px rgba(76,29,149,.3);
+  z-index: 999; transition: opacity .3s;
+}
+.toast.hidden { opacity: 0; pointer-events: none; }
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+
+@media (max-width: 600px) {
+  .persona-grid { grid-template-columns: 1fr; }
+  .persona-field:not(.half) { grid-column: auto; }
+  .import-actions { grid-template-columns: 1fr; }
+}

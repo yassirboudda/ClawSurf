@@ -32,7 +32,7 @@ async function checkRelayReachable(port) {
   } catch {
     setStatus(
       'error',
-      `Relay not reachable at ${url}. Start OpenClaw’s browser relay on this machine, then click the toolbar button again.`,
+      `Relay not reachable at ${url}. Start AMI Browser's gateway on this machine, then click the toolbar button again.`,
     )
   } finally {
     clearTimeout(t)

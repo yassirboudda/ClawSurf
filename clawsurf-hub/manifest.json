@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "AMI Browser",
+  "version": "2.0.0",
+  "description": "AMI Browser — AI command center on every new tab. Chat with agents, schedule automations, and manage connections.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "alarms",
+    "scripting",
+    "debugger",
+    "contextMenus",
+    "notifications",
+    "sidePanel",
+    "cookies"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "chrome_url_overrides": {
+    "newtab": "hub.html"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AMI Browser",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-inject.js"],
+      "css": ["content-inject.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/icon16.png", "icons/icon32.png", "icons/icon48.png", "icons/icon128.png", "persona.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

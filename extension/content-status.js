@@ -1,26 +1,49 @@
 (() => {
   const ID = 'openclaw-relay-status-pill'
 
-  // ── Title rewriter: replace "Chromium" with "ClawSurf" everywhere ──
+  // ── Title rewriter: replace "Chromium" with "AMI Browser" everywhere ──
   function rewriteTitle() {
     if (document.title.includes('Chromium')) {
-      document.title = document.title.replace(/Chromium/g, 'ClawSurf')
+      document.title = document.title.replace(/Chromium/g, 'AMI Browser')
+    }
+  }
+
+  // ── Body text rewriter: replace visible "Chromium" in page content ──
+  function rewriteBodyText() {
+    // Only run on internal pages (chrome-extension://, about:, chrome://) and settings-like pages
+    const loc = window.location.href
+    if (!loc.startsWith('chrome-extension://') && !loc.startsWith('about:') && !loc.includes('settings')) return
+
+    const walker = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT, null)
+    let node
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue && node.nodeValue.includes('Chromium')) {
+        node.nodeValue = node.nodeValue.replace(/Chromium/g, 'AMI Browser')
+      }
     }
   }
 
   // Run once immediately and observe future changes
   rewriteTitle()
-  const titleObs = new MutationObserver(rewriteTitle)
+  rewriteBodyText()
+  const titleObs = new MutationObserver(() => { rewriteTitle(); rewriteBodyText(); })
   const headEl = document.querySelector('head')
   if (headEl) {
     titleObs.observe(headEl, { childList: true, subtree: true, characterData: true })
+  }
+  // Also observe body for dynamic content changes
+  const bodyObs = new MutationObserver(rewriteBodyText)
+  if (document.body) {
+    bodyObs.observe(document.body, { childList: true, subtree: true, characterData: true })
   }
   // Also watch after DOM ready in case <head> wasn't available at document_start
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       rewriteTitle()
+      rewriteBodyText()
       const h = document.querySelector('head')
       if (h) titleObs.observe(h, { childList: true, subtree: true, characterData: true })
+      if (document.body) bodyObs.observe(document.body, { childList: true, subtree: true, characterData: true })
     }, { once: true })
   }
 
@@ -53,24 +76,24 @@
   function paint(kind) {
     const el = ensurePill()
     if (kind === 'on') {
-      el.textContent = '🟢 OpenClaw: LISTENING'
+      el.textContent = '🟢 AMI: LISTENING'
       el.style.background = 'linear-gradient(135deg,#10b981,#059669)'
       el.style.opacity = '0.92'
       return
     }
     if (kind === 'cdp-only') {
-      el.textContent = '🟡 OpenClaw: CDP READY'
+      el.textContent = '🟡 AMI: CDP READY'
       el.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)'
       el.style.opacity = '0.92'
       return
     }
     if (kind === 'connecting') {
-      el.textContent = '🟠 OpenClaw: RECONNECTING…'
+      el.textContent = '🟠 AMI: RECONNECTING…'
       el.style.background = 'linear-gradient(135deg,#f59e0b,#d97706)'
       el.style.opacity = '0.92'
       return
     }
-    el.textContent = '🔴 OpenClaw: OFF'
+    el.textContent = '🔴 AMI: OFF'
     el.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)'
     el.style.opacity = '0.88'
   }

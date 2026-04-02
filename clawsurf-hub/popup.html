@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --lavender: #c4b5fd; --lavender-lt: #ede9fe;
+      --pink: #f9a8d4; --mint: #6ee7b7; --mint-lt: #d1fae5;
+      --text: #3b0764; --text-sec: #6b21a8; --text-muted: #a855f7;
+      --bg: #faf5ff; --border: #e9d5ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 320px; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 16px; }
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .header h1 { font-size: 16px; font-weight: 700; background: linear-gradient(135deg, var(--lavender), var(--pink)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header .ver { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 20px; background: linear-gradient(135deg, #67e8f9, var(--mint)); color: #fff; }
+    .status-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .status-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: #fff; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.on { background: var(--mint); }
+    .dot.off { background: #fdba74; }
+    .stat-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .stat-box { flex: 1; text-align: center; padding: 10px 4px; background: var(--lavender-lt); border-radius: 10px; }
+    .stat-box .n { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, var(--lavender), var(--pink)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-box .l { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    .quick-input { display: flex; gap: 6px; }
+    .quick-input input { flex: 1; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; background: #fff; color: var(--text); outline: none; }
+    .quick-input input:focus { border-color: var(--lavender); }
+    .quick-input button { padding: 8px 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--lavender), var(--pink)); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .links { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+    .links a { font-size: 12px; color: var(--text-sec); text-decoration: none; padding: 6px 8px; border-radius: 6px; }
+    .links a:hover { background: var(--lavender-lt); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AMI Browser</h1>
+    <span class="ver">2.0</span>
+  </div>
+
+  <div class="status-grid">
+    <div class="status-row"><span>Gateway</span><span class="dot" id="dot-gw"></span></div>
+    <div class="status-row"><span>MCP Server</span><span class="dot" id="dot-mcp"></span></div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="n" id="p-tasks">0</div><div class="l">Tasks</div></div>
+    <div class="stat-box"><div class="n" id="p-pages">0</div><div class="l">Pages</div></div>
+    <div class="stat-box"><div class="n" id="p-crons">0</div><div class="l">Automation</div></div>
+  </div>
+
+  <div class="quick-input">
+    <input id="quick-cmd" type="text" placeholder="Quick command…">
+    <button id="quick-send">Go</button>
+  </div>
+
+  <div class="links">
+    <a href="#" id="link-newtab">Open AMI Hub</a>
+    <a href="#" id="link-sidepanel">Open Side Panel</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

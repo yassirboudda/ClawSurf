@@ -1,0 +1,13 @@
+{
+  "name": "ami-browser",
+  "version": "2.0.0",
+  "description": "AMI Browser – Gateway & Chrome Extension",
+  "private": true,
+  "scripts": {
+    "gateway": "node gateway.js",
+    "start": "node gateway.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

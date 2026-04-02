@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --lavender: #c4b5fd; --lavender-lt: #ede9fe;
+      --pink: #f9a8d4; --mint: #6ee7b7;
+      --text: #3b0764; --text-sec: #6b21a8; --text-muted: #a855f7;
+      --bg: #faf5ff; --border: #e9d5ff; --border-soft: #f3e8ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+    .sp-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border-soft); background: rgba(255,255,255,.85); backdrop-filter: blur(10px); }
+    .sp-header h2 { font-size: 14px; font-weight: 700; background: linear-gradient(135deg, var(--lavender), var(--pink)); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sp-status { font-size: 10px; color: var(--mint); font-weight: 600; }
+    #sp-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    #sp-messages::-webkit-scrollbar { width: 4px; }
+    #sp-messages::-webkit-scrollbar-thumb { background: var(--lavender); border-radius: 2px; }
+    .sp-msg { max-width: 90%; }
+    .sp-msg-user { align-self: flex-end; }
+    .sp-msg-agent { align-self: flex-start; }
+    .sp-bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; word-break: break-word; }
+    .sp-msg-user .sp-bubble { background: linear-gradient(135deg, var(--lavender), var(--pink)); color: #fff; border-bottom-right-radius: 4px; }
+    .sp-msg-agent .sp-bubble { background: #fff; border: 1px solid var(--border-soft); border-bottom-left-radius: 4px; }
+    .sp-composer { display: flex; gap: 6px; padding: 10px 12px; border-top: 1px solid var(--border-soft); background: rgba(255,255,255,.6); }
+    .sp-composer input { flex: 1; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; outline: none; background: #fff; color: var(--text); }
+    .sp-composer input:focus { border-color: var(--lavender); box-shadow: 0 0 0 2px rgba(196,181,253,.2); }
+    .sp-composer button { width: 34px; height: 34px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--lavender), var(--pink)); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .sp-composer button:hover { opacity: .85; }
+  </style>
+</head>
+<body>
+  <div class="sp-header">
+    <h2>AMI Agent</h2>
+    <span class="sp-status" id="sp-status">Ready</span>
+  </div>
+  <div id="sp-messages">
+    <div class="sp-msg sp-msg-agent">
+      <div class="sp-bubble">How can I help while you browse?</div>
+    </div>
+  </div>
+  <div class="sp-composer">
+    <input id="sp-input" type="text" placeholder="Ask the agent…">
+    <button id="sp-send">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

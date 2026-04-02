@@ -1,0 +1,16 @@
+{
+  "name": "clawsurf2",
+  "version": "2.0.0",
+  "description": "ClawSurf 2.0 — AI-powered browser with built-in OpenClaw automation",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "dependencies": {
+    "electron": "^33.0.0",
+    "ws": "^8.20.0"
+  },
+  "author": "Airpote",
+  "license": "MIT"
+}

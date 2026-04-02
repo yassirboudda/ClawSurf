@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
-Name=ClawSurf
+Name=AMI Browser
 GenericName=Web Browser
-Comment=Dedicated Chromium-based browser for OpenClaw automation
-Exec=$HOME/.local/bin/ClawSurf-launch %U
-Icon=clawsurf
+Comment=AI-powered automation browser with built-in chat, agents, and connections
+Exec=$HOME/.local/bin/AMI-Browser %U
+Icon=ami-browser
 Terminal=false
 Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=false
-StartupWMClass=ClawSurf
-Keywords=openclaw;automation;relay;browser;
+StartupWMClass=AMI-Browser
+Keywords=ami;browser;automation;agent;ai;

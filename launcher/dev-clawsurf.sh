@@ -11,8 +11,8 @@ EXT_DEVTOOLS_MCP="$REPO_DIR/devtools-mcp"
 EXT_HUB="$REPO_DIR/clawsurf-hub"
 # Do not pass a URL — let the clawsurf-hub extension newtab override
 # provide the AMI Browser hub page as the default startup page.
-# If user passes a URL explicitly, honour it.
 URL="${1:-}"
+PORTS=(18789 18792 18800 9223)
 
 mkdir -p "$PROFILE_DIR"
 
@@ -46,7 +46,6 @@ ARGS=(
   --class=AMI-Browser
   --user-agent="AMI Browser/2.0"
   --ozone-platform=x11
-  # ── Keep MV3 service workers alive ──
   --disable-features=ExtensionServiceWorkerLifetimeV2
   --disable-background-timer-throttling
   --disable-renderer-backgrounding
@@ -75,11 +74,32 @@ fi
 export BAMF_DESKTOP_FILE_HINT="$HOME/.local/share/applications/ami-browser.desktop"
 export DESKTOP_FILE_NAME="ami-browser"
 
-# ── Start gateway in background ──
+FIREWALL_ACTIVE=0
+setup_firewall() {
+  if ! command -v sudo >/dev/null 2>&1; then
+    return
+  fi
+  for port in "${PORTS[@]}"; do
+    sudo -n iptables -C INPUT -p tcp --dport "$port" ! -i lo -j DROP -m comment --comment "ami-browser-guard" 2>/dev/null || \
+      sudo -n iptables -A INPUT -p tcp --dport "$port" ! -i lo -j DROP -m comment --comment "ami-browser-guard" 2>/dev/null || true
+  done
+  FIREWALL_ACTIVE=1
+}
+
+teardown_firewall() {
+  if [[ "$FIREWALL_ACTIVE" -ne 1 ]]; then
+    return
+  fi
+  for port in "${PORTS[@]}"; do
+    sudo -n iptables -D INPUT -p tcp --dport "$port" ! -i lo -j DROP -m comment --comment "ami-browser-guard" 2>/dev/null || true
+  done
+}
+
+setup_firewall
+
 GATEWAY_PID=""
-GATEWAY_JS="$REPO_DIR/clawsurf-hub/gateway.js"
-if [[ -f "$GATEWAY_JS" ]]; then
-  node "$GATEWAY_JS" &
+if [[ -f "$REPO_DIR/clawsurf-hub/gateway.js" ]]; then
+  setsid node "$REPO_DIR/clawsurf-hub/gateway.js" >/tmp/ami-browser-gateway.log 2>&1 &
   GATEWAY_PID=$!
   echo "[AMI Browser] Gateway started (PID $GATEWAY_PID)"
 fi
@@ -149,8 +169,12 @@ cleanup() {
     kill "$OPTIONS_CLOSER_PID" 2>/dev/null || true
   fi
   if [[ -n "$GATEWAY_PID" ]]; then
-    kill "$GATEWAY_PID" 2>/dev/null || true
+    echo "[AMI Browser] Stopping gateway (PID $GATEWAY_PID)"
+    kill -- -"$GATEWAY_PID" 2>/dev/null || kill "$GATEWAY_PID" 2>/dev/null || true
+    sleep 1
+    kill -9 -- -"$GATEWAY_PID" 2>/dev/null || kill -9 "$GATEWAY_PID" 2>/dev/null || true
   fi
+  teardown_firewall
 }
 trap cleanup EXIT
 

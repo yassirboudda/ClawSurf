@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=AMI Browser Dev
+GenericName=Web Browser
+Comment=AI-powered automation browser with built-in chat, agents, and connections (Dev)
+Exec=/home/boudda/workspace/ClawSurf/launcher/dev-clawsurf.sh %U
+Icon=/home/boudda/workspace/ClawSurf/amibrowser/ami-logo.png
+Terminal=false
+Categories=Network;WebBrowser;Development;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=false
+StartupWMClass=AMI-Browser
+Keywords=ami;browser;automation;agent;ai;dev;

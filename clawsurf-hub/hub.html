@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AMI Browser</title>
+  <link rel="stylesheet" href="hub.css">
+  <style>
+    /* Override Chrome NTP attribution bar that appears below the extension content */
+    #ntp-contents, #attribution, .ntp-bottom, [class*="customize"],
+    #customize-dialog, #one-google-bar, ntp-app { display: none !important; }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <div class="topbar-left">
+      <div class="logo-mark logo-mark-image">
+        <img src="icons/icon48.png" alt="AMI Browser logo">
+      </div>
+      <div>
+        <h1 class="brand">AMI Browser</h1>
+        <p class="brand-subtitle">Automation hub for chat, agents, and connections</p>
+      </div>
+      <span class="version-tag">2.0</span>
+    </div>
+    <div class="topbar-center">
+      <div class="search-bar">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="search-input" type="text" placeholder="Search the web or enter URL..." autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pills">
+        <span class="pill pill-gw" id="pill-gateway" title="Gateway">
+          <span class="pill-dot"></span> Gateway
+        </span>
+        <span class="pill pill-mcp" id="pill-mcp" title="MCP Server">
+          <span class="pill-dot"></span> MCP
+        </span>
+        <span class="pill" id="pill-pause" title="Automation state">
+          <span class="pill-dot"></span> Active
+        </span>
+      </div>
+      <button id="btn-open-connections" class="icon-btn" title="Connections">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h8"/><path d="M12 8v8"/><circle cx="12" cy="12" r="9"/></svg>
+      </button>
+      <button id="btn-settings" class="icon-btn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="hub-grid">
+    <section id="col-shortcuts" class="hub-col">
+      <div class="card card-shortcuts">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Quick Links
+        </h3>
+        <div id="quick-links-grid"></div>
+        <button id="btn-add-shortcut" class="btn-ghost">+ Add shortcut</button>
+      </div>
+
+      <!-- ── AMI Quick Access Tools ── -->
+      <div class="card card-ami-tools">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          AMI Tools
+        </h3>
+        <div class="ami-tools-grid">
+          <a href="#col-chat" class="ami-tool-link" id="tool-link-agent" title="Chat with AMI Agent">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Agent Chat</span>
+          </a>
+          <a href="persona.html" class="ami-tool-link" id="tool-link-persona" title="Manage your persona profile">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>My Persona</span>
+          </a>
+          <a href="#" class="ami-tool-link" id="tool-link-connections" title="Manage integrations">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h8"/><path d="M12 8v8"/><circle cx="12" cy="12" r="9"/></svg>
+            <span>Connections</span>
+          </a>
+          <a href="#" class="ami-tool-link" id="tool-link-memory" title="View agent memories">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+            <span>Memory</span>
+          </a>
+          <a href="#" class="ami-tool-link" id="tool-link-skills" title="Browse all skills">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span>Skills</span>
+          </a>
+          <a href="#" class="ami-tool-link" id="tool-link-settings" title="Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Settings</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card card-stats">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          AMI Activity
+        </h3>
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-val" id="stat-tasks">0</span>
+            <span class="stat-label">Tasks run</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val" id="stat-pages">0</span>
+            <span class="stat-label">Pages visited</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val" id="stat-crons">0</span>
+            <span class="stat-label">Automations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          Integrations
+        </h3>
+        <div class="integration-pill-list">
+          <span class="integration-pill">Telegram</span>
+          <span class="integration-pill">Discord</span>
+          <span class="integration-pill">WhatsApp</span>
+          <span class="integration-pill">Slack</span>
+          <span class="integration-pill">Signal</span>
+          <span class="integration-pill">Teams</span>
+          <span class="integration-pill">CoinGecko</span>
+          <span class="integration-pill">1inch</span>
+          <span class="integration-pill">DeBank</span>
+          <span class="integration-pill">Zapper</span>
+          <span class="integration-pill">The Graph</span>
+          <span class="integration-pill">Dune</span>
+          <span class="integration-pill">Stripe</span>
+          <span class="integration-pill">Plaid</span>
+        </div>
+        <button id="btn-open-connections-side" class="btn-pastel">Manage connections</button>
+      </div>
+
+      <div class="card card-skills">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Agent Skills
+          <span class="skill-total-badge" id="skill-total-badge">0</span>
+        </h3>
+        <div class="skills-search-wrap">
+          <input type="text" id="skills-search" placeholder="Search skills…" autocomplete="off">
+        </div>
+        <div class="skills-categories" id="skills-categories"></div>
+        <div class="skills-list" id="skills-list"></div>
+      </div>
+    </section>
+
+    <section id="col-chat" class="hub-col">
+      <div class="card card-chat">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="agent-avatar logo-mark-image agent-avatar-image">
+              <img src="icons/icon32.png" alt="AMI Browser agent">
+            </div>
+            <div>
+              <h3 class="chat-agent-name">AMI Agent</h3>
+              <span class="chat-agent-status" id="agent-status">Ready</span>
+            </div>
+          </div>
+          <div class="chat-header-right">
+            <button class="icon-btn-sm" id="btn-clear-chat" title="Clear chat">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="chat-messages">
+          <div class="msg msg-system">
+            <div class="msg-bubble">
+              Welcome to <strong>AMI Browser</strong>. I have <strong id="skill-count-msg">130+</strong> built-in skills — try "summarize this page", "extract emails", "crypto prices", or "fill form". Use <kbd>Ctrl+Shift+A</kbd> for quick chat on any page.
+            </div>
+          </div>
+        </div>
+        <div id="chat-composer">
+          <div class="composer-tools">
+            <button class="tool-btn" id="btn-attach" title="Attach current tab">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <button class="tool-btn" id="btn-screenshot" title="Screenshot active tab">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </button>
+            <button class="tool-btn" id="btn-mic" title="Speech to text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v11"/><rect x="8" y="1" width="8" height="14" rx="4"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg>
+            </button>
+            <button class="tool-btn" id="btn-tts" title="Speak last reply">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </button>
+            <button class="tool-btn" id="btn-cron" title="Create scheduled automation">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </button>
+          </div>
+          <div class="composer-input-wrap">
+            <textarea id="chat-input" placeholder="Ask AMI Agent to do something..." rows="1"></textarea>
+            <button id="btn-send" class="btn-send" title="Send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+          <input id="audio-upload" type="file" accept="audio/*" hidden>
+        </div>
+      </div>
+    </section>
+
+    <section id="col-tools" class="hub-col">
+      <div class="card card-cron">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Scheduled Automation
+        </h3>
+        <div id="cron-list">
+          <div class="empty-state">No scheduled automation yet. Use the chat or click the clock to create one.</div>
+        </div>
+        <button id="btn-new-cron" class="btn-pastel">+ New automation</button>
+      </div>
+
+      <div class="card card-config">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+          Agent Config
+        </h3>
+        <div class="config-form">
+          <label>AI Provider</label>
+          <select id="llm-provider"></select>
+
+          <div id="cfg-api-key" class="cfg-hidden">
+            <label>API Key</label>
+            <input type="password" id="llm-api-key" placeholder="sk-...">
+          </div>
+          <div id="cfg-url" class="cfg-hidden">
+            <label>Endpoint</label>
+            <input type="url" id="llm-url" placeholder="http://localhost:11434/v1">
+          </div>
+          <div id="cfg-model" class="cfg-hidden">
+            <label>Model</label>
+            <div class="inline-field-row">
+              <select id="llm-model"></select>
+              <button id="btn-refresh-models" class="btn-ghost" type="button">Refresh</button>
+            </div>
+          </div>
+
+          <label>System Prompt</label>
+          <textarea id="system-prompt" rows="3">You are AMI Agent. You automate browser tasks, orchestrate connected services, and respond with precise actionable steps.</textarea>
+
+          <div class="toggle-row toggle-row-stack">
+            <label class="toggle"><input type="checkbox" id="cfg-autoexec" checked> Auto-execute</label>
+            <label class="toggle"><input type="checkbox" id="cfg-thinking"> Show reasoning</label>
+            <label class="toggle"><input type="checkbox" id="cfg-pause"> Pause all automation</label>
+          </div>
+
+          <button id="btn-save-config" class="btn-pastel">Save</button>
+        </div>
+      </div>
+
+      <!-- ── Persona link (full page at persona.html) ── -->
+      <div class="card card-persona-link">
+        <a href="persona.html" class="persona-link-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div class="persona-link-text">
+            <strong>My Persona</strong>
+            <span id="persona-status">Not configured</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+      <!-- ── Memory viewer ── -->
+      <div class="card card-memory">
+        <h3 class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          Agent Memory
+          <span class="memory-count-badge" id="memory-count-badge">0</span>
+        </h3>
+        <div class="memory-search-wrap">
+          <input type="text" id="memory-search" placeholder="Search memories…" autocomplete="off">
+        </div>
+        <div id="memory-list" class="memory-list">
+          <div class="empty-state">No memories yet. Say "remember …" in chat.</div>
+        </div>
+        <div class="memory-actions">
+          <button id="btn-export-memory" class="btn-ghost btn-sm">Export</button>
+          <button id="btn-clear-memory" class="btn-ghost btn-sm btn-danger">Clear all</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-cron" class="modal hidden">
+      <div class="modal-header">
+        <h3>Create scheduled automation</h3>
+        <button class="modal-close" data-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <label>Name</label>
+        <input type="text" id="cron-name" placeholder="Monitor AMI Browser mentions">
+        <label>What should AMI Agent do?</label>
+        <textarea id="cron-task" rows="3" placeholder="Open GitHub, search for AMI Browser issues, summarize new results"></textarea>
+        <label>Schedule</label>
+        <div class="schedule-grid">
+          <select id="cron-freq">
+            <option value="1m">Every minute</option>
+            <option value="5m">Every 5 minutes</option>
+            <option value="15m">Every 15 minutes</option>
+            <option value="30m">Every 30 minutes</option>
+            <option value="1h" selected>Every hour</option>
+            <option value="6h">Every 6 hours</option>
+            <option value="12h">Every 12 hours</option>
+            <option value="1d">Daily</option>
+            <option value="custom">Custom cron</option>
+          </select>
+          <input type="text" id="cron-custom" placeholder="*/5 * * * *" class="cfg-hidden">
+        </div>
+        <label class="toggle"><input type="checkbox" id="cron-notify" checked> Notify on completion</label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" data-close>Cancel</button>
+        <button id="btn-create-cron" class="btn-pastel">Create</button>
+      </div>
+    </div>
+
+    <div id="modal-settings" class="modal hidden">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="modal-close" data-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4>Ports</h4>
+        <div class="port-grid">
+          <span>CDP</span><code>18800</code>
+          <span>Gateway</span><code>18789</code>
+          <span>Relay WS</span><code>18792</code>
+          <span>MCP</span><code>9223</code>
+        </div>
+        <h4>Security</h4>
+        <div class="security-list">
+          <div class="sec-row"><span>Localhost-only</span><span class="badge badge-ok">active</span></div>
+          <div class="sec-row"><span>Firewall</span><span class="badge" id="fw-badge">checking...</span></div>
+          <div class="sec-row"><span>Credential encryption</span><span class="badge badge-ok">AES-256-GCM</span></div>
+          <div class="sec-row"><span>Auto-kill on exit</span><span class="badge badge-ok">enabled</span></div>
+        </div>
+        <h4>About</h4>
+        <p class="about-text">AMI Browser is an AI-powered automation workspace with built-in chat, model catalogs, secure connections, speech tools, and scheduled automation.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-pastel" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="hub.js"></script>
+  <script>
+    // Attempt to hide Chrome's native NTP attribution footer
+    (function hideNtpFooter() {
+      const selectors = ['#ntp-contents', '#attribution', '.ntp-bottom', 
+        '#one-google-bar', 'ntp-app', '#most-visited'];
+      function hide() {
+        selectors.forEach(s => {
+          document.querySelectorAll(s).forEach(el => { el.style.display = 'none'; });
+        });
+        // Also hide any iframes Chrome injects
+        document.querySelectorAll('iframe[src*="chrome"]').forEach(f => { f.style.display = 'none'; });
+      }
+      hide();
+      // Re-run after Chrome finishes injecting its elements
+      setTimeout(hide, 100);
+      setTimeout(hide, 500);
+      setTimeout(hide, 1500);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AMI Browser Connections</title>
+  <link rel="stylesheet" href="hub.css">
+  <style>
+    /* ── Multi-step modal ── */
+    .step-indicator { display: flex; gap: 8px; align-items: center; margin-bottom: 18px; }
+    .step-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; background: var(--card); border: 2px solid var(--border); color: var(--muted); transition: all .2s; }
+    .step-dot.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .step-dot.done { background: #10b981; border-color: #10b981; color: #fff; }
+    .step-line { flex: 1; height: 2px; background: var(--border); }
+    .step-line.done { background: #10b981; }
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .modal-body { min-height: 180px; }
+
+    /* ── Test result ── */
+    .test-result { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; display: none; }
+    .test-result.success { display: block; background: rgba(16,185,129,.12); color: #10b981; border: 1px solid rgba(16,185,129,.25); }
+    .test-result.error { display: block; background: rgba(239,68,68,.12); color: #ef4444; border: 1px solid rgba(239,68,68,.25); }
+    .test-result.loading { display: block; background: rgba(245,158,11,.12); color: #f59e0b; border: 1px solid rgba(245,158,11,.25); }
+
+    /* ── Model picker ── */
+    .model-picker { position: relative; }
+    .model-picker input { width: 100%; }
+    .model-dropdown { position: absolute; top: 100%; left: 0; right: 0; max-height: 240px; overflow-y: auto; background: var(--card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 100; display: none; margin-top: 4px; }
+    .model-dropdown.open { display: block; }
+    .model-item { padding: 8px 14px; cursor: pointer; font-size: 13px; border-bottom: 1px solid var(--border); transition: background .15s; }
+    .model-item:hover, .model-item.selected { background: rgba(139,92,246,.12); }
+    .model-item:last-child { border-bottom: none; }
+    .model-item .model-id { font-weight: 600; color: var(--text); }
+    .model-source { font-size: 11px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+    /* ── Connection status badge ── */
+    .conn-status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .conn-status.active { background: #10b981; }
+    .conn-status.error { background: #ef4444; }
+    .conn-status.untested { background: #f59e0b; }
+
+    /* ── Category filter ── */
+    .integration-pill { cursor: pointer; transition: all .2s; }
+    .integration-pill.active { background: var(--primary); color: #fff; }
+
+    /* ── Search bar ── */
+    .search-bar { margin-bottom: 14px; }
+    .search-bar input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; }
+    .search-bar input:focus { outline: none; border-color: var(--primary); }
+  </style>
+</head>
+<body>
+  <main id="hub-grid">
+    <section class="hub-col" style="grid-column: 1 / -1; max-width: 1200px; margin: 0 auto; width: 100%;">
+      <div class="card">
+        <h1 class="brand" style="margin-bottom: 6px;">AMI Browser Connections</h1>
+        <p class="about-text" style="margin-bottom: 16px;">Securely store credentials for AI providers, automation platforms, and third-party services. All secrets are encrypted (AES-256-GCM) before hitting disk.</p>
+        <div class="integration-pill-list" id="connection-categories"></div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <h3 class="card-title">Available Integrations <span id="provider-count" style="color:var(--muted);font-weight:400;font-size:13px;"></span></h3>
+        <div class="search-bar">
+          <input type="text" id="provider-search" placeholder="Search integrations…">
+        </div>
+        <div id="connections-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;"></div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <h3 class="card-title">Saved Connections <span id="saved-count" style="color:var(--muted);font-weight:400;font-size:13px;"></span></h3>
+        <div id="saved-connections"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Multi-step Connection Modal -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="connection-modal" class="modal hidden" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 id="connection-title">New connection</h3>
+        <button class="modal-close" data-close>&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Step indicator -->
+        <div class="step-indicator">
+          <div class="step-dot active" id="step-dot-1">1</div>
+          <div class="step-line" id="step-line-1"></div>
+          <div class="step-dot" id="step-dot-2">2</div>
+          <div class="step-line" id="step-line-2"></div>
+          <div class="step-dot" id="step-dot-3">3</div>
+        </div>
+
+        <!-- Step 1: Enter credentials -->
+        <div class="step-panel active" id="step-1">
+          <label>Connection name</label>
+          <input type="text" id="connection-name" placeholder="My OpenAI Key">
+          <label style="margin-top:12px;">API Key / Secret / Token</label>
+          <input type="password" id="connection-secret" placeholder="Enter your API key or secret">
+          <label style="margin-top:12px;">Optional metadata (JSON)</label>
+          <textarea id="connection-meta" rows="2" placeholder='{"baseUrl":"http://localhost:11434"}'></textarea>
+        </div>
+
+        <!-- Step 2: Test connection -->
+        <div class="step-panel" id="step-2">
+          <div style="text-align:center;padding:10px 0;">
+            <p style="font-size:15px;font-weight:600;margin-bottom:12px;">Test your connection</p>
+            <p class="about-text">We'll verify your credentials by making a lightweight test call to the provider's API.</p>
+            <button id="btn-test-connection" class="btn-pastel" style="margin-top:16px;min-width:180px;">🧪 Test Connection</button>
+            <div id="test-result" class="test-result"></div>
+          </div>
+        </div>
+
+        <!-- Step 3: Choose model (for AI providers) or confirm -->
+        <div class="step-panel" id="step-3">
+          <div id="model-picker-section">
+            <label>Select a default model</label>
+            <div class="model-picker">
+              <input type="text" id="model-search" placeholder="Search models…" autocomplete="off">
+              <div id="model-dropdown" class="model-dropdown"></div>
+            </div>
+            <div id="model-source" class="model-source"></div>
+            <input type="hidden" id="selected-model">
+          </div>
+          <div id="no-model-section" style="display:none;text-align:center;padding:20px 0;">
+            <p class="about-text">This provider doesn't require model selection. Ready to save!</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display:flex;justify-content:space-between;">
+        <button class="btn-ghost" id="btn-back" style="display:none;">← Back</button>
+        <div style="flex:1;"></div>
+        <button class="btn-ghost" data-close>Cancel</button>
+        <button id="btn-next" class="btn-pastel" style="margin-left:8px;">Next →</button>
+      </div>
+    </div>
+  </div>
+  <script src="connections.js"></script>
+</body>
+</html>

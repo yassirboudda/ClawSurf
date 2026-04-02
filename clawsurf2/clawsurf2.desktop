@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=ClawSurf 2.0
+GenericName=AI Browser
+Comment=AI-powered browser with built-in OpenClaw automation
+Exec=/home/boudda/workspace/ClawSurf/clawsurf2/start-dev.sh %U
+Icon=/home/boudda/workspace/ClawSurf/extension/icons/icon128.png
+Terminal=false
+Categories=Network;WebBrowser;Development;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+StartupWMClass=ClawSurf2
+Keywords=openclaw;automation;browser;ai;agent;

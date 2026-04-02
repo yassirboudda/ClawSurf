@@ -1,8 +1,15 @@
-# ClawSurf profile data
+# ClawSurf / AMI Browser profile data
 clawsurf-profile/
+ami-browser-profile/
 
 # Node modules
 node_modules/
+
+# Environment / secrets
+.env
+.env.*
+.enc_key
+.connections.json
 
 # OS files
 .DS_Store
