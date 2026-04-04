@@ -83,16 +83,30 @@
     }
   }
 
-  // ── Send event to background ──
+  // ── Send event to background (with context-loss guard) ──
+
+  let contextLost = false
 
   const send = (event) => {
+    if (contextLost) return
     try {
       chrome.runtime.sendMessage({
         type: 'teachanagent-event',
         event,
+      }, () => {
+        // If the runtime was invalidated, mark it so we stop spamming
+        if (chrome.runtime.lastError) {
+          const msg = chrome.runtime.lastError.message || ''
+          if (msg.includes('Extension context invalidated') || msg.includes('message port closed')) {
+            contextLost = true
+            hideIndicator()
+          }
+        }
       })
     } catch {
-      // Extension context invalidated
+      // Extension context invalidated — stop trying
+      contextLost = true
+      hideIndicator()
     }
   }
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TeachAnAgent",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Record browser actions to teach your OpenClaw agent. Play, pause, stop, and export action logs as JSON.",
   "icons": {
     "16": "icons/icon16.png",
@@ -9,7 +9,7 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "permissions": ["activeTab", "tabs", "storage", "scripting"],
+  "permissions": ["activeTab", "tabs", "storage", "scripting", "alarms"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
   "action": {
