@@ -52,6 +52,7 @@ ARGS=(
   --no-first-run
   --no-default-browser-check
   --disable-infobars
+  --disable-background-networking
   --class=AMI-Browser
   --ozone-platform=x11
   --disable-features=ExtensionServiceWorkerLifetimeV2

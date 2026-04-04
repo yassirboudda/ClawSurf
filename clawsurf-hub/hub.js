@@ -267,10 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toolSettings = document.getElementById('tool-link-settings');
   if (toolSettings) toolSettings.addEventListener('click', e => { e.preventDefault(); document.getElementById('btn-settings')?.click(); });
 
-  // Default focus: scroll chat into view and focus input
+  // Scroll chat column into view (don't steal focus — keeps omnibox prompt)
   requestAnimationFrame(() => {
     document.getElementById('col-chat')?.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'start' });
-    document.getElementById('chat-input')?.focus();
   });
 });
 
