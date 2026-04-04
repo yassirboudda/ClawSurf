@@ -34,6 +34,8 @@ ARGS=(
   --disable-background-networking
   --class=AMI-Browser
   --ozone-platform=x11
+  # ── Fix captcha: Google flags "AMIBrowser" UA as bot → keep Chrome token ──
+  --user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
   # ── Keep MV3 service workers alive ──
   --disable-features=ExtensionServiceWorkerLifetimeV2
   --disable-background-timer-throttling

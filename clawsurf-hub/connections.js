@@ -45,6 +45,62 @@ function isAIProvider(provider) {
          AI_PROVIDER_IDS.has(provider.id);
 }
 
+/* ── Provider brand icons (inline SVG data URIs, same CDN as hub shortcuts) ── */
+const PROVIDER_ICONS = {
+  openai:      'https://cdn.simpleicons.org/openai',
+  anthropic:   'https://cdn.simpleicons.org/anthropic',
+  gemini:      'https://cdn.simpleicons.org/googlegemini',
+  mistral:     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23F7931E'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='42' fill='white'%3EM%3C/text%3E%3C/svg%3E",
+  grok:        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3E%F0%9D%95%8F%3C/text%3E%3C/svg%3E",
+  deepseek:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%234D6BFE'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3EDS%3C/text%3E%3C/svg%3E",
+  openrouter:  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%236C3AED'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3EOR%3C/text%3E%3C/svg%3E",
+  huggingface: 'https://cdn.simpleicons.org/huggingface',
+  ollama:      'https://cdn.simpleicons.org/ollama',
+  together:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230FA37F'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3ET%3C/text%3E%3C/svg%3E",
+  replicate:   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23262626'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3ER%3C/text%3E%3C/svg%3E",
+  perplexity:  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2320808D'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3Eai%3C/text%3E%3C/svg%3E",
+  cohere:      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2339594D'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='42' fill='white'%3EC%3C/text%3E%3C/svg%3E",
+  ai21:        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FF6F61'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='32' fill='white'%3EA21%3C/text%3E%3C/svg%3E",
+  fireworks:   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FF4F00'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='42' fill='white'%3EF%3C/text%3E%3C/svg%3E",
+  groq:        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23F55036'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='42' fill='white'%3EG%3C/text%3E%3C/svg%3E",
+  cerebras:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231E40AF'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3ECB%3C/text%3E%3C/svg%3E",
+  runpod:      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%235C2D91'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3ERP%3C/text%3E%3C/svg%3E",
+  lmstudio:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2310B981'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='32' fill='white'%3ELM%3C/text%3E%3C/svg%3E",
+  elevenlabs:  'https://cdn.simpleicons.org/elevenlabs',
+  stability:   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237C3AED'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3ESD%3C/text%3E%3C/svg%3E",
+  midjourney:  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3EMJ%3C/text%3E%3C/svg%3E",
+  whisper:     'https://cdn.simpleicons.org/openai',
+  deepgram:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2313EF93'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='%23000'%3EDG%3C/text%3E%3C/svg%3E",
+  assemblyai:  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%233B82F6'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3EAA%3C/text%3E%3C/svg%3E",
+  pinecone:    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='32' fill='white'%3E%F0%9F%8C%B2%3C/text%3E%3C/svg%3E",
+  telegram:    'https://cdn.simpleicons.org/telegram',
+  discord:     'https://cdn.simpleicons.org/discord',
+  whatsapp:    'https://cdn.simpleicons.org/whatsapp',
+  slack:       'https://cdn.simpleicons.org/slack',
+  github:      'https://cdn.simpleicons.org/github',
+  zapier:      'https://cdn.simpleicons.org/zapier',
+  make:        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%236D00CC'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3EM%3C/text%3E%3C/svg%3E",
+  notion:      'https://cdn.simpleicons.org/notion',
+  airtable:    'https://cdn.simpleicons.org/airtable',
+  supabase:    'https://cdn.simpleicons.org/supabase',
+  firebase:    'https://cdn.simpleicons.org/firebase',
+  mongodb:     'https://cdn.simpleicons.org/mongodb',
+  redis:       'https://cdn.simpleicons.org/redis',
+  postgresql:  'https://cdn.simpleicons.org/postgresql',
+  mysql:       'https://cdn.simpleicons.org/mysql',
+  aws:         'https://cdn.simpleicons.org/amazonaws',
+  gcp:         'https://cdn.simpleicons.org/googlecloud',
+  azure:       'https://cdn.simpleicons.org/microsoftazure',
+  stripe:      'https://cdn.simpleicons.org/stripe',
+  twilio:      'https://cdn.simpleicons.org/twilio',
+  sendgrid:    'https://cdn.simpleicons.org/twilio',
+};
+
+function getProviderIcon(id) {
+  return PROVIDER_ICONS[id] || PROVIDER_ICONS[id.replace(/^(stt_|tts_)/, '')] ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%239333EA'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-family='Arial,sans-serif' font-weight='bold' font-size='36' fill='white'%3E" + encodeURIComponent(id.charAt(0).toUpperCase()) + "%3C/text%3E%3C/svg%3E";
+}
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', async () => {
   bindModal();
@@ -102,9 +158,12 @@ function renderProviderGrid() {
   gridEl.innerHTML = filtered.map(provider => `
     <button class="card" data-provider="${escapeHtml(provider.id)}" style="text-align:left;cursor:pointer;padding:14px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
-        <div>
-          <strong>${escapeHtml(provider.label)}</strong>
-          <div class="about-text">${escapeHtml(provider.category)}</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img src="${getProviderIcon(provider.id)}" alt="" width="32" height="32" style="border-radius:8px;flex-shrink:0;" onerror="this.style.display='none'">
+          <div>
+            <strong>${escapeHtml(provider.label)}</strong>
+            <div class="about-text">${escapeHtml(provider.category)}</div>
+          </div>
         </div>
         <span class="integration-pill">${escapeHtml(provider.kind)}</span>
       </div>
@@ -133,12 +192,17 @@ async function loadConnections() {
     const statusLabel = status === 'active' ? 'Connected' : status === 'error' ? 'Error' : 'Untested';
     return `
     <div class="cron-item" style="margin-bottom:10px;">
+      <img src="${getProviderIcon(c.provider)}" alt="" width="28" height="28" style="border-radius:6px;flex-shrink:0;margin-right:8px;" onerror="this.style.display='none'">
       <div class="cron-info" style="flex:1;">
         <div class="cron-name"><span class="conn-status ${escapeHtml(status)}" title="${statusLabel}"></span>${escapeHtml(c.name)}</div>
         <div class="cron-schedule">${escapeHtml(c.provider)}${c.model ? ' · ' + escapeHtml(c.model) : ''} · ${escapeHtml(c.updatedAt || '')}</div>
       </div>
-      <button class="btn-ghost btn-retest" data-retest="${escapeHtml(c.id)}" data-provider="${escapeHtml(c.provider)}" title="Re-test" style="font-size:16px;padding:4px 8px;">🧪</button>
-      <button class="btn-ghost" data-delete="${escapeHtml(c.id)}" title="Delete connection" style="color:#e74c4c;font-size:18px;padding:4px 8px;">✕</button>
+      <button class="btn-ghost btn-retest" data-retest="${escapeHtml(c.id)}" data-provider="${escapeHtml(c.provider)}" title="Re-test" style="padding:4px 8px;display:flex;align-items:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+      <button class="btn-ghost" data-delete="${escapeHtml(c.id)}" title="Delete connection" style="color:#e74c4c;padding:4px 8px;display:flex;align-items:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
     </div>`;
   }).join('');
 
@@ -151,7 +215,7 @@ async function loadConnections() {
 
   [...savedEl.querySelectorAll('[data-retest]')].forEach(btn => {
     btn.addEventListener('click', async () => {
-      btn.textContent = '⏳';
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
       const connId = btn.dataset.retest;
       const res = await fetch(`${GW_HTTP}/api/connections/${encodeURIComponent(connId)}/secret`);
       const secretData = await res.json();
@@ -161,8 +225,10 @@ async function loadConnections() {
         body: JSON.stringify({ provider: btn.dataset.provider, secret: secretData.secret || '', connectionId: connId }),
       });
       const testData = await testRes.json();
-      btn.textContent = testData.ok ? '✅' : '❌';
-      setTimeout(() => { btn.textContent = '🧪'; }, 3000);
+      btn.innerHTML = testData.ok
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      setTimeout(() => { btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>'; }, 3000);
       await loadConnections();
     });
   });

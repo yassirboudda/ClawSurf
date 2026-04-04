@@ -286,7 +286,7 @@ function handleSearch(val) {
     const url = q.startsWith('http') ? q : `https://${q}`;
     window.location.href = url;
   } else {
-    window.location.href = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+    window.location.href = `https://duckduckgo.com/?q=${encodeURIComponent(q)}`;
   }
 }
 
