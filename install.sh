@@ -35,6 +35,28 @@ else
   echo "  ℹ No build/dist/ami-browser-linux64 found — skipping binary install"
 fi
 
+# 0b. AppArmor profile for Ubuntu 24.04+ (allows unprivileged user namespaces)
+if [[ -f /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]] && \
+   [[ "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null)" == "1" ]]; then
+  if [[ ! -f /etc/apparmor.d/ami-browser ]]; then
+    echo "  → Creating AppArmor profile for AMI Browser (Ubuntu 24.04+ userns restriction)"
+    APPARMOR_PROFILE='abi <abi/4.0>,
+include <tunables/global>
+
+profile ami-browser /home/*/.local/lib/ami-browser/ami-browser flags=(unconfined) {
+  userns,
+  include if exists <local/ami-browser>
+}'
+    if command -v pkexec &>/dev/null; then
+      pkexec bash -c "echo '$APPARMOR_PROFILE' > /etc/apparmor.d/ami-browser && apparmor_parser -r /etc/apparmor.d/ami-browser" 2>/dev/null || \
+      echo "  ⚠ Could not create AppArmor profile. Run: sudo tee /etc/apparmor.d/ami-browser and load with sudo apparmor_parser -r"
+    else
+      sudo bash -c "echo '$APPARMOR_PROFILE' > /etc/apparmor.d/ami-browser && apparmor_parser -r /etc/apparmor.d/ami-browser" 2>/dev/null || \
+      echo "  ⚠ Could not create AppArmor profile (needs sudo/pkexec)."
+    fi
+  fi
+fi
+
 # 1. Browser Relay extension
 echo "  → Copying Browser Relay extension to $EXT_RELAY_DEST"
 mkdir -p "$EXT_RELAY_DEST"
