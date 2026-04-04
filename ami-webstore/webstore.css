@@ -1,11 +1,26 @@
 /* AMI Web Store — CWS integration styles */
 
-/* Hide "Switch to Chrome" banners */
-.CtSBdf, .hSHfTb {
+/* ── Hide "Switch to Chrome" banners (all known CWS class variants) ── */
+.CtSBdf, .hSHfTb, .Pv8bre, .LcSFjd {
   display: none !important;
 }
 
-/* AMI Install button */
+/* Hide any element that contains "Switch to Chrome" text in the banner area */
+div[role="banner"]:has(~ *:not(:empty)),
+div[role="alert"],
+div[role="status"] {
+  /* Only hide if JS matches text — CSS can't match on text content */
+}
+
+/* ── Hide the "Switch to Chrome?" floating popup/dialog ── */
+/* CWS uses an absolutely-positioned card for the promo popup */
+div[role="dialog"],
+div[role="alertdialog"] {
+  /* JS handles this by checking text content */
+}
+
+/* ── Hide "No thanks / Yes" promo dialogs ── */
+/* The popup has "Google recommends..." text with No thanks/Yes buttons */
 .ami-install-btn {
   display: inline-flex;
   align-items: center;

@@ -225,7 +225,42 @@ done || true
 
 echo "  ✓ Branding complete."
 
-# ── 4r. Replace product logo images with AMI Browser logo ──
+# ── 4r. Chrome Web Store "Add to Chrome" → "Add to AMI Browser" ──
+echo "  → Patching Chrome Web Store button text..."
+# Patch the CWS-related strings in .grd/.grdp files
+find chrome/ components/ -type f \( -name "*.grd" -o -name "*.grdp" \) | while read -r f; do
+  if grep -ql 'Add to Chrome\|Añadir a Chrome\|Ajouter à Chrome' "$f" 2>/dev/null; then
+    sed -i \
+      -e 's/Add to Chrome/Add to AMI Browser/g' \
+      -e 's/Añadir a Chrome/Añadir a AMI Browser/g' \
+      -e 's/Ajouter à Chrome/Ajouter à AMI Browser/g' \
+      -e 's/Hinzufügen zu Chrome/Hinzufügen zu AMI Browser/g' \
+      "$f"
+  fi
+done
+
+# ── 4s. Default browser check: "AMI Browser" not "Chromium" ──
+echo "  → Patching default browser check strings..."
+# The default browser infobar says "Chromium is not your default browser"
+# Already handled by the global Chromium→AMI Browser replacement,
+# but also patch the specific default_browser strings
+find chrome/browser/ui/ -name "*.cc" -o -name "*.h" | while read -r f; do
+  if grep -ql 'default.*browser\|not your default' "$f" 2>/dev/null; then
+    sed -i 's/Chromium is not your default browser/AMI Browser is not your default browser/g' "$f" 2>/dev/null || true
+  fi
+done
+
+# ── 4t. Hide "Switch to Chrome" messaging in WebUI ──
+echo "  → Patching WebUI chrome promo strings..."
+find chrome/ components/ -type f \( -name "*.grd" -o -name "*.grdp" \) | while read -r f; do
+  if grep -ql 'Switch to Chrome' "$f" 2>/dev/null; then
+    sed -i 's/Switch to Chrome/Switch to AMI Browser/g' "$f" 2>/dev/null || true
+  fi
+done
+
+echo "  ✓ CWS & default browser branding complete."
+
+# ── 4u. Replace product logo images with AMI Browser logo ──
 echo "  → Generating AMI Browser product logos..."
 # Create a simple AMI logo SVG and convert to PNGs for all required sizes
 AMI_LOGO_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">

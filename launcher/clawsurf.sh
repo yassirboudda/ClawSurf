@@ -11,6 +11,7 @@ EXT_ADBLOCK="$HOME/snap/chromium/common/ami-adblocker-extension"
 EXT_WALLET="$HOME/snap/chromium/common/ami-wallet-extension"
 EXT_REWARDS="$HOME/snap/chromium/common/ami-rewards-extension"
 EXT_WEBSTORE="$HOME/snap/chromium/common/ami-webstore-extension"
+EXT_LINKEDIN="$HOME/Downloads/LinkedInAutoApply-main"
 URL="${1:-}"
 
 mkdir -p "$PROFILE_DIR"
@@ -30,8 +31,6 @@ fi
 ARGS=(
   --user-data-dir="$PROFILE_DIR"
   --no-first-run
-  --no-default-browser-check
-  --disable-infobars
   --disable-background-networking
   --class=AMI-Browser
   --ozone-platform=x11
@@ -49,7 +48,7 @@ ARGS=(
 
 # Collect extensions to load
 EXT_LIST=""
-for ext in "$EXT_RELAY" "$EXT_TEACH" "$EXT_DEVTOOLS_MCP" "$EXT_HUB" "$EXT_ADBLOCK" "$EXT_WALLET" "$EXT_REWARDS" "$EXT_WEBSTORE"; do
+for ext in "$EXT_RELAY" "$EXT_TEACH" "$EXT_DEVTOOLS_MCP" "$EXT_HUB" "$EXT_ADBLOCK" "$EXT_WALLET" "$EXT_REWARDS" "$EXT_WEBSTORE" "$EXT_LINKEDIN"; do
   if [[ -d "$ext" ]]; then
     if [[ -n "$EXT_LIST" ]]; then
       EXT_LIST="$EXT_LIST,$ext"
@@ -95,6 +94,33 @@ start_title_override() {
 }
 
 start_title_override
+
+# ── Pin AMI Shield, Hub, Wallet, WebStore to toolbar on first run ──
+PREFS_FILE="$PROFILE_DIR/Default/Preferences"
+if [[ -f "$PREFS_FILE" ]] && command -v python3 >/dev/null 2>&1; then
+  python3 -c "
+import json, sys
+pf = '$PREFS_FILE'
+try:
+    with open(pf) as f:
+        p = json.load(f)
+except:
+    sys.exit(0)
+ext = p.setdefault('extensions', {})
+pinned = set(ext.get('pinned_extensions', []))
+settings = ext.get('settings', {})
+want = {'ami-adblocker', 'clawsurf-hub', 'ami-wallet', 'ami-webstore'}
+for eid, conf in settings.items():
+    path = conf.get('path', '')
+    for tag in want:
+        if tag in path:
+            pinned.add(eid)
+if set(ext.get('pinned_extensions', [])) != pinned:
+    ext['pinned_extensions'] = sorted(pinned)
+    with open(pf, 'w') as f:
+        json.dump(p, f)
+" 2>/dev/null || true
+fi
 
 # ── Start the gateway (Node.js backend for AI chat, connections, automation) ──
 GATEWAY_PID=""
