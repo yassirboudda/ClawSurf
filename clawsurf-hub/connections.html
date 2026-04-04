@@ -40,8 +40,16 @@
     .conn-status.untested { background: #f59e0b; }
 
     /* ── Category filter ── */
-    .integration-pill { cursor: pointer; transition: all .2s; }
-    .integration-pill.active { background: var(--primary); color: #fff; }
+    .category-bar { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0; }
+    .cat-chip { display: inline-flex; align-items: center; gap: 5px; padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; background: var(--card); border: 1.5px solid var(--border); color: var(--muted); cursor: pointer; transition: all .2s; white-space: nowrap; user-select: none; }
+    .cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+    .cat-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .cat-chip .cat-count { font-size: 11px; opacity: .7; }
+
+    /* ── Back button ── */
+    .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .btn-back-hub { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: var(--primary); cursor: pointer; transition: all .2s; }
+    .btn-back-hub:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
 
     /* ── Search bar ── */
     .search-bar { margin-bottom: 14px; }
@@ -53,9 +61,12 @@
   <main id="hub-grid">
     <section class="hub-col" style="grid-column: 1 / -1; max-width: 1200px; margin: 0 auto; width: 100%;">
       <div class="card">
+        <div class="back-row">
+          <button class="btn-back-hub" id="btn-back-hub">← Back to Hub</button>
+        </div>
         <h1 class="brand" style="margin-bottom: 6px;">AMI Browser Connections</h1>
         <p class="about-text" style="margin-bottom: 16px;">Securely store credentials for AI providers, automation platforms, and third-party services. All secrets are encrypted (AES-256-GCM) before hitting disk.</p>
-        <div class="integration-pill-list" id="connection-categories"></div>
+        <div class="category-bar" id="connection-categories"></div>
       </div>
       <div class="card" style="margin-top: 16px;">
         <h3 class="card-title">Available Integrations <span id="provider-count" style="color:var(--muted);font-weight:400;font-size:13px;"></span></h3>
@@ -101,8 +112,9 @@
         <!-- Step 2: Test connection -->
         <div class="step-panel" id="step-2">
           <div style="text-align:center;padding:10px 0;">
-            <p style="font-size:15px;font-weight:600;margin-bottom:12px;">Test your connection</p>
+            <p style="font-size:15px;font-weight:600;margin-bottom:6px;">Test your connection</p>
             <p class="about-text">We'll verify your credentials by making a lightweight test call to the provider's API.</p>
+            <p class="about-text" style="font-weight:600;color:var(--primary);margin-top:4px;">⚠️ You must pass the test before saving.</p>
             <button id="btn-test-connection" class="btn-pastel" style="margin-top:16px;min-width:180px;">🧪 Test Connection</button>
             <div id="test-result" class="test-result"></div>
           </div>

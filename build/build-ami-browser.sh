@@ -225,6 +225,52 @@ done || true
 
 echo "  ✓ Branding complete."
 
+# ── 4r. Replace product logo images with AMI Browser logo ──
+echo "  → Generating AMI Browser product logos..."
+# Create a simple AMI logo SVG and convert to PNGs for all required sizes
+AMI_LOGO_SVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs>
+  <circle cx="128" cy="128" r="120" fill="url(#g)"/>
+  <text x="128" y="160" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="100" fill="white">A</text>
+</svg>'
+
+# Replace Chromium logo PNGs with AMI purple logo using ImageMagick (if available) or Python
+if command -v convert >/dev/null 2>&1; then
+  echo "$AMI_LOGO_SVG" > /tmp/ami_logo.svg
+  for size in 16 24 32 48 64 128 256; do
+    convert -background none -resize "${size}x${size}" /tmp/ami_logo.svg /tmp/ami_logo_${size}.png 2>/dev/null || true
+  done
+elif command -v python3 >/dev/null 2>&1; then
+  python3 -c "
+import subprocess, os
+svg = '''$AMI_LOGO_SVG'''
+open('/tmp/ami_logo.svg','w').write(svg)
+# Try rsvg-convert
+for size in [16,24,32,48,64,128,256]:
+    try:
+        subprocess.run(['rsvg-convert','-w',str(size),'-h',str(size),'/tmp/ami_logo.svg','-o',f'/tmp/ami_logo_{size}.png'], check=True, capture_output=True)
+    except: pass
+" 2>/dev/null || true
+fi
+
+# Replace Chromium product logos in source tree
+for logodir in chrome/app/theme/chromium chrome/app/theme/default_100_percent/chromium chrome/app/theme/default_200_percent/chromium; do
+  if [[ -d "$logodir" ]]; then
+    for pngfile in "$logodir"/product_logo_*.png; do
+      if [[ -f "$pngfile" ]]; then
+        # Extract size from filename (e.g., product_logo_128.png -> 128)
+        size=$(echo "$pngfile" | grep -oP '\d+(?=\.png)')
+        if [[ -f "/tmp/ami_logo_${size}.png" ]]; then
+          cp "/tmp/ami_logo_${size}.png" "$pngfile"
+          echo "    Replaced: $pngfile"
+        fi
+      fi
+    done
+  fi
+done
+
+echo "  ✓ Logo replacement complete."
+
 # ═══════════════════════════════════════════════════════════════
 #  5. CONFIGURE BUILD
 # ═══════════════════════════════════════════════════════════════
@@ -254,9 +300,9 @@ use_lld = true
 treat_warnings_as_errors = false
 enable_iterator_debugging = false
 
-# Media
-ffmpeg_branding = "Chromium"
-proprietary_codecs = false
+# Media — enable proprietary codecs for YouTube/H.264/AAC support
+ffmpeg_branding = "Chrome"
+proprietary_codecs = true
 
 # Parallel linking (56GB RAM allows ~4 concurrent link jobs)
 concurrent_links = 4

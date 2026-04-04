@@ -40,6 +40,11 @@ ARGS=(
   --disable-background-timer-throttling
   --disable-renderer-backgrounding
   --disable-backgrounding-occluded-windows
+  # ── GPU / Video performance ──
+  --enable-gpu-rasterization
+  --enable-zero-copy
+  --enable-features=VaapiVideoDecoder,VaapiVideoEncoder,CanvasOopRasterization
+  --ignore-gpu-blocklist
 )
 
 # Collect extensions to load

@@ -267,14 +267,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toolSettings = document.getElementById('tool-link-settings');
   if (toolSettings) toolSettings.addEventListener('click', e => { e.preventDefault(); document.getElementById('btn-settings')?.click(); });
 
-  // Clean the extension URL from the address bar
-  history.replaceState({}, document.title, '/');
+  // Shorten the extension URL visible in the address bar
+  try { history.replaceState({}, '', '/'); } catch {}
 
-  // Scroll chat column into view, then focus the hub search input
-  // so the omnibox loses focus and appears empty
+  // Scroll chat column into view
   requestAnimationFrame(() => {
     document.getElementById('col-chat')?.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'start' });
-    setTimeout(() => document.getElementById('search-input')?.focus(), 120);
   });
 });
 
@@ -301,7 +299,7 @@ function renderShortcuts(shortcuts) {
     const a = document.createElement('a');
     a.className = 'shortcut-tile';
     a.href = s.url;
-    const isUrl = s.icon && (s.icon.startsWith('http') || s.icon.startsWith('icons/'));
+    const isUrl = s.icon && (s.icon.startsWith('http') || s.icon.startsWith('icons/') || s.icon.startsWith('data:'));
     const iconContent = isUrl
       ? `<img src="${s.icon}" alt="${s.label}" width="20" height="20">`
       : s.icon;
@@ -1064,6 +1062,14 @@ async function checkServices() {
     dom.pillMcp.classList.add('offline');
   }
 
+  // Firewall badge — gateway up = firewall active (iptables rules set by launcher)
+  const fwBadge = document.getElementById('fw-badge');
+  if (fwBadge) {
+    const gwUp = !dom.pillGw.classList.contains('offline');
+    fwBadge.textContent = gwUp ? 'active' : 'inactive';
+    fwBadge.className = gwUp ? 'badge badge-ok' : 'badge badge-warn';
+  }
+
   // Re-check every 15s
   setTimeout(checkServices, 15000);
 }
@@ -1080,6 +1086,26 @@ function loadConfig() {
   if (config.autoExec !== undefined) dom.cfgAutoexec.checked = config.autoExec;
   if (config.showThinking !== undefined) dom.cfgThinking.checked = config.showThinking;
   updateConfigVisibility();
+  // Auto-fill API key from saved connections if not set locally
+  syncKeyFromConnections();
+}
+
+/** Pull API key from saved connections for the active provider */
+async function syncKeyFromConnections() {
+  const prov = dom.llmProvider.value;
+  if (!prov || prov === 'none' || prov === 'ollama') return;
+  if (dom.llmApiKey.value.trim()) return; // already has a key
+  try {
+    const res = await fetch(`${GW_HTTP}/api/connections/by-provider?provider=${encodeURIComponent(prov)}`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.secret) {
+      dom.llmApiKey.value = data.secret;
+      config.apiKey = data.secret;
+      updateConfigVisibility();
+      refreshModels();
+    }
+  } catch { /* gateway offline — ignore */ }
 }
 
 function saveConfig() {
@@ -1518,10 +1544,11 @@ document.addEventListener('DOMContentLoaded', () => {
   bindPauseToggle();
   bindConnections();
 
-  // Auto-refresh model list when provider changes
+  // Auto-refresh model list and sync connection key when provider changes
   dom.llmProvider.addEventListener('change', () => {
     updateConfigVisibility();
-    refreshModels();
+    dom.llmApiKey.value = ''; // clear old key so sync can refill
+    syncKeyFromConnections().then(() => refreshModels());
   });
 });
 

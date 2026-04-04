@@ -50,6 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   bindModal();
   await Promise.all([loadProviders(), loadConnections()]);
   searchInputEl.addEventListener('input', renderProviderGrid);
+
+  // Back to hub button
+  const backBtn = document.getElementById('btn-back-hub');
+  if (backBtn) backBtn.addEventListener('click', () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      window.location.href = chrome.runtime.getURL('hub.html');
+    } else {
+      window.location.href = 'hub.html';
+    }
+  });
 });
 
 /* ──────────────── Provider Grid ──────────────── */
@@ -58,14 +68,16 @@ async function loadProviders() {
   const data = await response.json();
   connectionTypes = data.providers || [];
 
-  /* Category pills */
+  /* Category chips with counts */
+  const catCounts = {};
+  connectionTypes.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
   const categories = [...new Set(connectionTypes.map(p => p.category))];
-  categoriesEl.innerHTML = `<span class="integration-pill active" data-cat="">All</span>` +
-    categories.map(c => `<span class="integration-pill" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</span>`).join('');
+  categoriesEl.innerHTML = `<span class="cat-chip active" data-cat="">All <span class="cat-count">${connectionTypes.length}</span></span>` +
+    categories.map(c => `<span class="cat-chip" data-cat="${escapeHtml(c)}">${escapeHtml(c)} <span class="cat-count">${catCounts[c]}</span></span>`).join('');
 
-  [...categoriesEl.querySelectorAll('.integration-pill')].forEach(pill => {
+  [...categoriesEl.querySelectorAll('.cat-chip')].forEach(pill => {
     pill.addEventListener('click', () => {
-      categoriesEl.querySelector('.integration-pill.active')?.classList.remove('active');
+      categoriesEl.querySelector('.cat-chip.active')?.classList.remove('active');
       pill.classList.add('active');
       activeCategory = pill.dataset.cat || null;
       renderProviderGrid();
