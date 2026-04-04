@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+  "name": "AMI Shield",
+  "version": "1.0.0",
+  "description": "Built-in ad & tracker blocker for AMI Browser. Blocks ads, trackers, and annoyances for a faster, cleaner web.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "externally_connectable": {
+    "ids": ["*"]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AMI Shield — Ad Blocker",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ami_adblock_rules",
+        "enabled": true,
+        "path": "rules/adblock-rules.json"
+      },
+      {
+        "id": "ami_tracker_rules",
+        "enabled": true,
+        "path": "rules/tracker-rules.json"
+      },
+      {
+        "id": "ami_annoyance_rules",
+        "enabled": true,
+        "path": "rules/annoyance-rules.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["cosmetic-filter.js"],
+      "css": ["cosmetic-filter.css"],
+      "run_at": "document_start"
+    }
+  ]
+}

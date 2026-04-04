@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root { --bg:#f8fafc; --card:#fff; --text:#0f172a; --muted:#64748b; --accent:#2563eb; --ok:#16a34a; --border:#e2e8f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 340px; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    .head { padding: 16px; background: linear-gradient(135deg, #1d4ed8, #0ea5e9); color: #fff; }
+    .head h1 { font-size: 18px; font-weight: 800; }
+    .head p { font-size: 12px; opacity: .9; margin-top: 4px; }
+    .wrap { padding: 14px; display: grid; gap: 12px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .label { font-size: 12px; color: var(--muted); }
+    .val { font-size: 14px; font-weight: 700; }
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: #ef4444; }
+    .dot.on { background: var(--ok); }
+    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    button { border: none; border-radius: 10px; padding: 10px; font-weight: 700; cursor: pointer; }
+    .primary { background: var(--accent); color: #fff; }
+    .ghost { background: #e2e8f0; color: #0f172a; }
+    select { width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 10px; background: #fff; }
+    .accounts { max-height: 140px; overflow-y: auto; display: grid; gap: 6px; margin-top: 8px; }
+    .acct { border: 1px solid var(--border); border-radius: 8px; padding: 8px; font-size: 12px; }
+    .acct strong { display: block; font-size: 12px; }
+    .acct code { color: var(--muted); font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <h1>AMI Wallet</h1>
+    <p>Secure multi-chain wallet built into AMI Browser</p>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <div class="row">
+        <span class="label">Wallet Status</span>
+        <span class="status" id="wallet-status"><span class="dot" id="wallet-dot"></span> Locked</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="label">Accounts</span>
+        <span class="val" id="account-count">0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="label" for="chain-select">Network</label>
+      <select id="chain-select"></select>
+    </div>
+
+    <div class="btns">
+      <button class="primary" id="btn-create">Create Wallet</button>
+      <button class="ghost" id="btn-refresh">Refresh</button>
+    </div>
+
+    <div class="card">
+      <span class="label">Accounts</span>
+      <div class="accounts" id="accounts-list"></div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

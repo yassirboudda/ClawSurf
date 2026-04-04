@@ -1,6 +1,6 @@
 # ClawSurf 🦀🏄
 
-AMI Browser — a dedicated AI-powered browser for [OpenClaw](https://openclaw.ai) automation. ClawSurf runs as a separate browser profile with built-in extensions pre-loaded, so your main browser stays untouched.
+A dedicated Chromium-based browser for [OpenClaw](https://openclaw.ai) automation. ClawSurf runs as a separate browser profile with built-in extensions pre-loaded, so your main browser stays untouched.
 
 ## Features
 
@@ -8,7 +8,7 @@ AMI Browser — a dedicated AI-powered browser for [OpenClaw](https://openclaw.a
 - **OpenClaw Browser Relay extension** — auto-loaded on every page, maintains CDP (Chrome DevTools Protocol) connection for AI agent control
 - **Always-on status indicator** — floating pill shows connection status (🟢 LISTENING / 🟡 CDP READY / 🔴 OFF)
 - **Auto-attach** — relay re-attaches automatically on tab create, navigation, and page load
-- **Title rewriting** — replaces "Chromium" with "AMI Browser" in window titles
+- **Title rewriting** — replaces "Chromium" with "ClawSurf" in window titles
 - **Dock-friendly** — proper `StartupWMClass` and desktop entry so it shows as "ClawSurf" in your taskbar
 - **TeachAnAgent** — built-in action recorder extension with play/pause/stop/export UI for capturing browser interactions as JSON
 - **DevTools MCP Logger** — captures all browser activity (network, console, errors, DOM, performance) and exposes it to GitHub Copilot via MCP
@@ -24,7 +24,7 @@ AMI Browser — a dedicated AI-powered browser for [OpenClaw](https://openclaw.a
 
 ## Requirements
 
-- **Linux** with Chromium installed via snap (`/snap/bin/chromium`) — the underlying engine
+- **Linux** with Chromium installed via snap (`/snap/bin/chromium`)
 - **Node.js** 18+ (for MCP server)
 - [OpenClaw](https://openclaw.ai) gateway running locally (default port `18789`) — optional, only for relay
 
@@ -38,7 +38,7 @@ chmod +x install.sh
 ```
 
 The installer will:
-1. Copy all three extensions to `~/snap/chromium/common/` (engine profile directory)
+1. Copy all three extensions to `~/snap/chromium/common/`
 2. Install the MCP server to `~/.local/share/clawsurf/devtools-mcp-server/`
 3. Configure VS Code MCP (`~/.config/Code/User/mcp.json`) if not already set
 4. Install the `ClawSurf` launcher to `~/.local/bin/`
@@ -55,7 +55,7 @@ ClawSurf https://example.com
 ```
 
 The browser connects to:
-- **CDP** on `127.0.0.1:18800` (remote debugging)
+- **CDP** on `127.0.0.1:18800` (Chromium remote debugging)
 - **OpenClaw Gateway** on `127.0.0.1:18789`
 - **Relay WebSocket** on `127.0.0.1:18792`
 - **MCP HTTP** on `127.0.0.1:9223` (DevTools MCP Logger → MCP server)
@@ -176,7 +176,7 @@ Starting a new recording clears the previous session. A visual indicator (🔴 /
 
 ## How It Works
 
-1. `ClawSurf` launches AMI Browser with `--remote-debugging-port=18800` and a dedicated user profile
+1. `ClawSurf` launches Chromium with `--remote-debugging-port=18800` and a dedicated user profile
 2. All three extensions load automatically:
    - **Browser Relay** connects to OpenClaw's relay WebSocket
    - **TeachAnAgent** stands by for recording

@@ -1,7 +1,7 @@
 {
   "name": "chrome-devtools-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server that receives Chrome DevTools debugging data from an AMI Browser extension and exposes it to GitHub Copilot",
+  "description": "MCP server that receives Chrome DevTools debugging data from a Chromium extension and exposes it to GitHub Copilot",
   "type": "module",
   "main": "server.js",
   "bin": {

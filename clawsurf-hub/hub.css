@@ -189,6 +189,7 @@ body {
   gap: 18px;
   padding: 18px 20px;
   min-height: calc(100vh - var(--topbar-h));
+  height: calc(100vh - var(--topbar-h));
   max-width: 1440px;
   margin: 0 auto;
 }
@@ -197,6 +198,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-height: 0;
 }
 
 /* ══════════════ CARDS ══════════════ */
@@ -266,6 +268,11 @@ body {
   justify-content: center;
   font-size: 18px;
 }
+.shortcut-icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
 .shortcut-label {
   font-size: 11px;
   font-weight: 600;
@@ -305,6 +312,44 @@ body {
   text-transform: uppercase;
 }
 
+.builtins-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.builtin-item {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.builtin-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.builtin-value {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.btn-soon {
+  width: 100%;
+  margin-top: 10px;
+  opacity: .75;
+  cursor: not-allowed;
+}
+
 /* ══════════════ CHAT CARD ══════════════ */
 .card-chat {
   flex: 1;
@@ -313,6 +358,7 @@ body {
   padding: 0;
   overflow: hidden;
   min-width: 0;
+  min-height: 0;
 }
 .card-chat::after { display: none; }
 
@@ -816,20 +862,46 @@ body {
   color: var(--text-muted);
 }
 
-.integration-pill-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+/* ── Integration slider ── */
+.integration-slider {
+  overflow: hidden;
   margin-bottom: 12px;
+  cursor: grab;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+}
+.integration-slider:active { cursor: grabbing; }
+.integration-track {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  user-select: none;
 }
 
 .integration-pill {
-  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 8px;
   border-radius: 999px;
   background: var(--lavender-lt);
   color: var(--text-sec);
   font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+  transition: background .2s, transform .2s;
+}
+.integration-pill:hover {
+  background: var(--lavender);
+  color: var(--text);
+  transform: scale(1.05);
+}
+.integration-pill img {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
 }
 
 .inline-field-row {

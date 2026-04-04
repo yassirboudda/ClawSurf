@@ -1,0 +1,12 @@
+[
+  {"id": 1, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||cookiebot.com^", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 2, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||onetrust.com^", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 3, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||trustarc.com^", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 4, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||quantcast.mgr.consensu.org^", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 5, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||pushwoosh.com^", "resourceTypes": ["script"]}},
+  {"id": 6, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||pushengage.com^", "resourceTypes": ["script"]}},
+  {"id": 7, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||onesignal.com^", "resourceTypes": ["script"]}},
+  {"id": 8, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||intercom.io/widget", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 9, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||drift.com^", "resourceTypes": ["script","sub_frame"]}},
+  {"id": 10, "priority": 1, "action": {"type": "block"}, "condition": {"urlFilter": "||livechatinc.com^", "resourceTypes": ["script","sub_frame"]}}
+]

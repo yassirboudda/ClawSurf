@@ -12,6 +12,9 @@
   "permissions": ["activeTab", "tabs", "storage", "scripting", "alarms"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
+  "externally_connectable": {
+    "ids": ["*"]
+  },
   "action": {
     "default_title": "TeachAnAgent — Record browser actions",
     "default_popup": "popup.html",

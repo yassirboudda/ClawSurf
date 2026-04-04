@@ -121,6 +121,25 @@
             <span class="stat-label">Automations</span>
           </div>
         </div>
+        <div class="builtins-grid">
+          <div class="builtin-item">
+            <span class="builtin-label">Shield blocked</span>
+            <strong class="builtin-value" id="stat-ads-blocked">0</strong>
+          </div>
+          <div class="builtin-item">
+            <span class="builtin-label">Recorder</span>
+            <strong class="builtin-value" id="stat-recorder-state">Idle</strong>
+          </div>
+          <div class="builtin-item">
+            <span class="builtin-label">Recorded events</span>
+            <strong class="builtin-value" id="stat-recorder-events">0</strong>
+          </div>
+          <div class="builtin-item">
+            <span class="builtin-label">AMI Rewards</span>
+            <strong class="builtin-value" id="stat-rewards-state">SOON</strong>
+          </div>
+        </div>
+        <button class="btn-pastel btn-soon" id="btn-rewards-soon" disabled>AMI Rewards — SOON</button>
       </div>
 
       <div class="card">
@@ -128,21 +147,8 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           Integrations
         </h3>
-        <div class="integration-pill-list">
-          <span class="integration-pill">Telegram</span>
-          <span class="integration-pill">Discord</span>
-          <span class="integration-pill">WhatsApp</span>
-          <span class="integration-pill">Slack</span>
-          <span class="integration-pill">Signal</span>
-          <span class="integration-pill">Teams</span>
-          <span class="integration-pill">CoinGecko</span>
-          <span class="integration-pill">1inch</span>
-          <span class="integration-pill">DeBank</span>
-          <span class="integration-pill">Zapper</span>
-          <span class="integration-pill">The Graph</span>
-          <span class="integration-pill">Dune</span>
-          <span class="integration-pill">Stripe</span>
-          <span class="integration-pill">Plaid</span>
+        <div class="integration-slider" id="integration-slider">
+          <div class="integration-track" id="integration-track"></div>
         </div>
         <button id="btn-open-connections-side" class="btn-pastel">Manage connections</button>
       </div>

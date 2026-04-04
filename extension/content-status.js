@@ -1,60 +1,26 @@
 (() => {
   const ID = 'openclaw-relay-status-pill'
 
-  // ── Title rewriter: replace "Chromium" with "AMI Browser" everywhere ──
+  // ── Title rewriter: replace "Chromium" with "ClawSurf" everywhere ──
   function rewriteTitle() {
     if (document.title.includes('Chromium')) {
-      document.title = document.title.replace(/Chromium/g, 'AMI Browser')
+      document.title = document.title.replace(/Chromium/g, 'ClawSurf')
     }
-  }
-
-  // ── Body text rewriter: replace visible "Chromium" in page content ──
-  function rewriteBodyText() {
-    // Run on internal pages AND any page that might show "Chromium" text
-    const loc = window.location.href
-    const isInternal = loc.startsWith('chrome-extension://') || loc.startsWith('about:') || 
-                       loc.includes('settings') || loc.startsWith('chrome://') || loc.startsWith('chrome-search://')
-    
-    if (!document.body) return
-
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null)
-    let node
-    while ((node = walker.nextNode())) {
-      if (node.nodeValue && node.nodeValue.includes('Chromium')) {
-        node.nodeValue = node.nodeValue.replace(/Chromium/g, 'AMI Browser')
-      }
-    }
-
-    // Also target button text, aria-labels, title attributes
-    document.querySelectorAll('[title*="Chromium"], [aria-label*="Chromium"]').forEach(el => {
-      if (el.title) el.title = el.title.replace(/Chromium/g, 'AMI Browser')
-      if (el.getAttribute('aria-label')) {
-        el.setAttribute('aria-label', el.getAttribute('aria-label').replace(/Chromium/g, 'AMI Browser'))
-      }
-    })
   }
 
   // Run once immediately and observe future changes
   rewriteTitle()
-  rewriteBodyText()
-  const titleObs = new MutationObserver(() => { rewriteTitle(); rewriteBodyText(); })
+  const titleObs = new MutationObserver(rewriteTitle)
   const headEl = document.querySelector('head')
   if (headEl) {
     titleObs.observe(headEl, { childList: true, subtree: true, characterData: true })
-  }
-  // Also observe body for dynamic content changes
-  const bodyObs = new MutationObserver(rewriteBodyText)
-  if (document.body) {
-    bodyObs.observe(document.body, { childList: true, subtree: true, characterData: true })
   }
   // Also watch after DOM ready in case <head> wasn't available at document_start
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       rewriteTitle()
-      rewriteBodyText()
       const h = document.querySelector('head')
       if (h) titleObs.observe(h, { childList: true, subtree: true, characterData: true })
-      if (document.body) bodyObs.observe(document.body, { childList: true, subtree: true, characterData: true })
     }, { once: true })
   }
 

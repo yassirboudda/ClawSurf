@@ -375,6 +375,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 })
 
+// Allow AMI Hub extension to read recorder status safely.
+chrome.runtime.onMessageExternal.addListener((msg, _sender, sendResponse) => {
+  if (!msg || !msg.type) return
+
+  switch (msg.type) {
+    case 'teachanagent-get-state':
+      sendResponse(getState())
+      return
+    case 'teachanagent-get-events':
+      sendResponse({ events: getEvents() })
+      return
+  }
+})
+
 // ── Auto-inject on new tabs while recording ──
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {

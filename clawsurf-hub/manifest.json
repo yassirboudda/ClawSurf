@@ -19,7 +19,8 @@
     "contextMenus",
     "notifications",
     "sidePanel",
-    "cookies"
+    "cookies",
+    "management"
   ],
   "host_permissions": [
     "<all_urls>",

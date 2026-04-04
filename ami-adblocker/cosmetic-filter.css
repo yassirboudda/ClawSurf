@@ -1,0 +1,26 @@
+/* AMI Shield — Cosmetic element hiding for common ad containers */
+[class*="ad-container"],
+[class*="ad-wrapper"],
+[class*="ad-banner"],
+[class*="ad-slot"],
+[id*="google_ads"],
+[id*="div-gpt-ad"],
+[data-ad-slot],
+[data-google-query-id],
+.adsbygoogle,
+ins.adsbygoogle,
+[id^="rc-anchor"],
+[class*="sponsored-content"],
+[class*="native-ad"],
+[data-testid*="ad-"],
+[aria-label="advertisement"],
+[aria-label="Advertisement"] {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

@@ -57,14 +57,14 @@ async function fetchOk(url, { method = 'GET', timeoutMs = 1500 } = {}) {
     // With mode:'no-cors' an opaque response has type 'opaque' and status 0,
     // but it means the server IS reachable.
     if (res.type === 'opaque') {
-      console.log('[AMI Relay] fetchOk', url, '→ opaque (reachable)')
+      console.log('[AMI] fetchOk', url, '→ opaque (reachable)')
       return true
     }
     const ok = Boolean(res && res.ok)
-    console.log('[AMI Relay] fetchOk', url, '→', res.status, ok)
+    console.log('[AMI] fetchOk', url, '→', res.status, ok)
     return ok
   } catch (err) {
-    console.warn('[AMI Relay] fetchOk FAILED', url, String(err))
+    console.warn('[AMI] fetchOk FAILED', url, String(err))
     return false
   }
 }
@@ -82,8 +82,8 @@ async function updateMonitorBadge(tabId, source) {
     void chrome.action.setTitle({
       tabId,
       title: gwOk
-        ? `AMI Relay: listening (CDP+gateway ok) [${source}]`
-        : `AMI Relay: CDP ready (gateway unreachable) [${source}]`,
+        ? `AMI: listening (CDP+gateway ok) [${source}]`
+        : `AMI: CDP ready (gateway unreachable) [${source}]`,
     })
     return
   }
@@ -92,7 +92,7 @@ async function updateMonitorBadge(tabId, source) {
   publishTabStatus(tabId, 'off', source)
   void chrome.action.setTitle({
     tabId,
-    title: `AMI Relay: CDP not reachable (is AMI Browser running?) [${source}]`,
+    title: `AMI: CDP not reachable (is AMI Browser running?) [${source}]`,
   })
 }
 
@@ -146,7 +146,7 @@ async function syncBadgeFromDebugger(tabId) {
   setBadge(tabId, 'on')
   void chrome.action.setTitle({
     tabId,
-    title: 'AMI Relay: attached (click to detach)',
+    title: 'AMI Browser Relay: attached (click to detach)',
   })
   return true
 }
@@ -189,7 +189,7 @@ async function maybeAutoAttachTab(tabId, source) {
   setBadge(tabId, 'connecting')
   void chrome.action.setTitle({
     tabId,
-    title: `AMI Relay: auto-connecting (${source})…`,
+    title: `AMI Browser Relay: auto-connecting (${source})…`,
   })
 
   try {
@@ -213,14 +213,14 @@ async function maybeAutoAttachTab(tabId, source) {
       setBadge(tabId, 'on')
       void chrome.action.setTitle({
         tabId,
-        title: 'AMI Relay: reconnecting…',
+        title: 'AMI Browser Relay: reconnecting…',
       })
       scheduleAttachRetries(tabId, `recover:${String(source || 'auto')}`, 6, 600)
     } else {
       setBadge(tabId, 'error')
       void chrome.action.setTitle({
         tabId,
-        title: 'AMI Relay: auto-attach failed (open options)',
+        title: 'AMI Browser Relay: auto-attach failed (open options)',
       })
     }
     const message = err instanceof Error ? err.message : String(err)
@@ -346,7 +346,7 @@ function onRelayClosed(reason) {
     publishTabStatus(tabId, 'connecting', 'relay-disconnected')
     void chrome.action.setTitle({
       tabId,
-      title: 'AMI Relay: disconnected (click to re-attach)',
+      title: 'AMI Browser Relay: disconnected (click to re-attach)',
     })
   }
   tabs.clear()
@@ -368,9 +368,8 @@ async function maybeOpenHelpOnce() {
     const stored = await chrome.storage.local.get(['helpOnErrorShown'])
     if (stored.helpOnErrorShown === true) return
     await chrome.storage.local.set({ helpOnErrorShown: true })
-    // Do not hijack startup by opening options automatically.
-    // Users can open options manually from the extension menu.
-    console.warn('Relay attach failed; options page not auto-opened.')
+    // Do not auto-open options; it hijacks first-tab startup.
+    console.warn('Relay attach failed; open extension options manually if needed.')
   } catch {
     // ignore
   }
@@ -460,7 +459,7 @@ async function attachTab(tabId, opts = {}) {
   tabBySession.set(sessionId, tabId)
   void chrome.action.setTitle({
     tabId,
-    title: 'AMI Relay: attached (click to detach)',
+    title: 'AMI Browser Relay: attached (click to detach)',
   })
 
   if (!opts.skipAttachedEvent) {
@@ -518,13 +517,13 @@ async function detachTab(tabId, reason) {
     setBadge(tabId, 'off')
     void chrome.action.setTitle({
       tabId,
-      title: 'AMI Relay (click to attach/detach)',
+      title: 'AMI Browser Relay (click to attach/detach)',
     })
   } else {
     setBadge(tabId, 'on')
     void chrome.action.setTitle({
       tabId,
-      title: 'AMI Relay: reconnecting…',
+      title: 'AMI Browser Relay: reconnecting…',
     })
   }
 }
@@ -544,7 +543,7 @@ async function connectOrToggleForActiveTab() {
   setBadge(tabId, 'connecting')
   void chrome.action.setTitle({
     tabId,
-    title: 'AMI Relay: connecting to local relay…',
+    title: 'AMI Browser Relay: connecting to local relay…',
   })
 
   try {
@@ -555,7 +554,7 @@ async function connectOrToggleForActiveTab() {
     setBadge(tabId, 'error')
     void chrome.action.setTitle({
       tabId,
-      title: 'AMI Relay: relay not running (open options for setup)',
+      title: 'AMI Browser Relay: relay not running (open options for setup)',
     })
     void maybeOpenHelpOnce()
     // Extra breadcrumbs in chrome://extensions service worker logs.
@@ -794,42 +793,6 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }
 })
 
-// ── Auto-close browser's unwanted options.html tab ───────────────
-// Browser often auto-opens options.html for unpacked extensions.
-// We close it from multiple hooks to be reliable regardless of timing.
-const OPT_GUARD_MS = 8000          // watch window after boot
-const optBootTime = Date.now()
-
-async function closeOptionsTabs() {
-  try {
-    const optUrl = chrome.runtime.getURL('options.html')
-    const optTabs = await chrome.tabs.query({ url: optUrl })
-    for (const t of optTabs) {
-      await chrome.tabs.remove(t.id).catch(() => {})
-    }
-    // If we just closed the only tab, open a new tab so the user isn't
-    // left with an empty window.
-    if (optTabs.length > 0) {
-      const remaining = await chrome.tabs.query({})
-      if (remaining.length === 0) {
-        await chrome.tabs.create({ url: 'chrome://newtab' })
-      }
-    }
-  } catch (_) { /* ignore */ }
-}
-
-// Watch for the options tab being created during the startup window.
-chrome.tabs.onCreated.addListener((tab) => {
-  if (Date.now() - optBootTime > OPT_GUARD_MS) return
-  // New tabs may not have a URL yet; check on update.
-})
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  if (Date.now() - optBootTime > OPT_GUARD_MS) return
-  if (changeInfo.url && changeInfo.url.includes('/options.html')) {
-    chrome.tabs.remove(tabId).catch(() => {})
-  }
-})
-
 chrome.runtime.onInstalled.addListener(() => {
   ensureSweepAlarm()
   void refreshAllMonitorBadges('installed')
@@ -839,20 +802,6 @@ chrome.runtime.onInstalled.addListener(() => {
     }
   })
   void sweepAttachableTabs('installed')
-  void closeOptionsTabs()
-
-  // Context menu to open settings (since options_ui was removed)
-  chrome.contextMenus.create({
-    id: 'ami-relay-settings',
-    title: 'AMI Relay Settings',
-    contexts: ['action'],
-  })
-})
-
-chrome.contextMenus.onClicked.addListener((info) => {
-  if (info.menuItemId === 'ami-relay-settings') {
-    chrome.tabs.create({ url: chrome.runtime.getURL('options.html') })
-  }
 })
 
 chrome.runtime.onStartup.addListener(async () => {
@@ -874,5 +823,3 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 ensureSweepAlarm()
 void refreshAllMonitorBadges('boot')
 void sweepAttachableTabs('boot')
-// Close options.html on every service-worker boot (covers timing gaps).
-void closeOptionsTabs()

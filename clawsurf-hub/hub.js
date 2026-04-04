@@ -18,20 +18,26 @@ const STORE_KEYS = {
   chatHist:  'ami_chat_history',
 };
 
+const BUILTIN_EXT_NAMES = {
+  shield: 'AMI Shield',
+  recorder: 'TeachAnAgent',
+  rewards: 'AMI Rewards',
+};
+
 /* ── Default shortcuts ── */
 const DEFAULT_SHORTCUTS = [
-  { label: 'Google',         url: 'https://google.com',          icon: '🔍', bg: '#fde68a' },
-  { label: 'GitHub',         url: 'https://github.com',          icon: '🐙', bg: '#d8b4fe' },
-  { label: 'YouTube',        url: 'https://youtube.com',         icon: '▶️', bg: '#fca5a5' },
-  { label: 'ChatGPT',        url: 'https://chat.openai.com',     icon: '🧠', bg: '#bbf7d0' },
-  { label: 'AMI Finance',    url: 'https://app.ami.finance',     icon: '💰', bg: '#a78bfa' },
-  { label: 'Claude',         url: 'https://claude.ai',           icon: '🤖', bg: '#fdba74' },
-  { label: 'Reddit',         url: 'https://reddit.com',          icon: '📡', bg: '#fdba74' },
-  { label: 'X / Twitter',    url: 'https://x.com',               icon: '𝕏',  bg: '#e2e8f0' },
-  { label: 'Spotify',        url: 'https://open.spotify.com',    icon: '🎵', bg: '#86efac' },
-  { label: 'LinkedIn',       url: 'https://linkedin.com',        icon: '💼', bg: '#93c5fd' },
-  { label: 'Wikipedia',      url: 'https://wikipedia.org',       icon: '📖', bg: '#a5f3fc' },
-  { label: 'Amazon',         url: 'https://amazon.com',          icon: '📦', bg: '#fcd34d' },
+  { label: 'Google',         url: 'https://google.com',          icon: 'https://cdn.simpleicons.org/google',              bg: '#fde68a' },
+  { label: 'GitHub',         url: 'https://github.com',          icon: 'https://cdn.simpleicons.org/github',              bg: '#d8b4fe' },
+  { label: 'YouTube',        url: 'https://youtube.com',         icon: 'https://cdn.simpleicons.org/youtube/FF0000',      bg: '#fca5a5' },
+  { label: 'ChatGPT',        url: 'https://chat.openai.com',     icon: 'https://cdn.simpleicons.org/openai',              bg: '#bbf7d0' },
+  { label: 'AMI Finance',    url: 'https://app.ami.finance',     icon: 'icons/icon48.png',                                bg: '#a78bfa' },
+  { label: 'Claude',         url: 'https://claude.ai',           icon: 'https://cdn.simpleicons.org/anthropic',           bg: '#fdba74' },
+  { label: 'Reddit',         url: 'https://reddit.com',          icon: 'https://cdn.simpleicons.org/reddit/FF4500',       bg: '#fdba74' },
+  { label: 'X / Twitter',    url: 'https://x.com',               icon: 'https://cdn.simpleicons.org/x',                   bg: '#e2e8f0' },
+  { label: 'Spotify',        url: 'https://open.spotify.com',    icon: 'https://cdn.simpleicons.org/spotify/1DB954',      bg: '#86efac' },
+  { label: 'LinkedIn',       url: 'https://linkedin.com',        icon: 'https://cdn.simpleicons.org/linkedin/0A66C2',     bg: '#93c5fd' },
+  { label: 'Wikipedia',      url: 'https://wikipedia.org',       icon: 'https://cdn.simpleicons.org/wikipedia',           bg: '#a5f3fc' },
+  { label: 'Amazon',         url: 'https://amazon.com',          icon: 'https://cdn.simpleicons.org/amazon/FF9900',       bg: '#fcd34d' },
 ];
 
 /* ══════════════════════════════════════
@@ -73,6 +79,10 @@ const dom = {
   statTasks:     $('#stat-tasks'),
   statPages:     $('#stat-pages'),
   statCrons:     $('#stat-crons'),
+  statAdsBlocked:$('#stat-ads-blocked'),
+  statRecorderState: $('#stat-recorder-state'),
+  statRecorderEvents: $('#stat-recorder-events'),
+  statRewardsState: $('#stat-rewards-state'),
   chatMessages:  $('#chat-messages'),
   chatInput:     $('#chat-input'),
   btnSend:       $('#btn-send'),
@@ -115,6 +125,108 @@ let crons = [];
 let stats = { tasks: 0, pages: 0, crons: 0 };
 let chatHistory = [];
 let agentBusy = false;
+let extIdCache = {};
+
+/* ══════════════════════════════════════
+   Integration slider (auto-scroll + drag)
+   ══════════════════════════════════════ */
+const SLIDER_INTEGRATIONS = [
+  { label: 'OpenAI',        logo: 'https://cdn.simpleicons.org/openai' },
+  { label: 'Anthropic',     logo: 'https://cdn.simpleicons.org/anthropic' },
+  { label: 'Google Gemini',  logo: 'https://cdn.simpleicons.org/googlegemini/4285F4' },
+  { label: 'Mistral AI',    logo: 'https://cdn.simpleicons.org/mistral' },
+  { label: 'Meta',          logo: 'https://cdn.simpleicons.org/meta/0082FB' },
+  { label: 'HuggingFace',   logo: 'https://cdn.simpleicons.org/huggingface' },
+  { label: 'Groq',          logo: 'https://cdn.simpleicons.org/groq' },
+  { label: 'Perplexity',    logo: 'https://cdn.simpleicons.org/perplexity' },
+  { label: 'Telegram',      logo: 'https://cdn.simpleicons.org/telegram/26A5E4' },
+  { label: 'Discord',       logo: 'https://cdn.simpleicons.org/discord/5865F2' },
+  { label: 'WhatsApp',      logo: 'https://cdn.simpleicons.org/whatsapp/25D366' },
+  { label: 'Slack',         logo: 'https://cdn.simpleicons.org/slack' },
+  { label: 'Signal',        logo: 'https://cdn.simpleicons.org/signal/3A76F0' },
+  { label: 'Microsoft Teams', logo: 'https://cdn.simpleicons.org/microsoftteams/6264A7' },
+  { label: 'Stripe',        logo: 'https://cdn.simpleicons.org/stripe/635BFF' },
+  { label: 'PayPal',        logo: 'https://cdn.simpleicons.org/paypal/003087' },
+  { label: 'GitHub',        logo: 'https://cdn.simpleicons.org/github' },
+  { label: 'GitLab',        logo: 'https://cdn.simpleicons.org/gitlab/FC6D26' },
+  { label: 'Vercel',        logo: 'https://cdn.simpleicons.org/vercel' },
+  { label: 'Cloudflare',    logo: 'https://cdn.simpleicons.org/cloudflare/F38020' },
+  { label: 'AWS',           logo: 'https://cdn.simpleicons.org/amazonaws/FF9900' },
+  { label: 'Docker',        logo: 'https://cdn.simpleicons.org/docker/2496ED' },
+  { label: 'Salesforce',    logo: 'https://cdn.simpleicons.org/salesforce/00A1E0' },
+  { label: 'HubSpot',       logo: 'https://cdn.simpleicons.org/hubspot/FF7A59' },
+  { label: 'Jira',          logo: 'https://cdn.simpleicons.org/jira/0052CC' },
+  { label: 'Notion',        logo: 'https://cdn.simpleicons.org/notion' },
+  { label: 'Linear',        logo: 'https://cdn.simpleicons.org/linear/5E6AD2' },
+  { label: 'MongoDB',       logo: 'https://cdn.simpleicons.org/mongodb/47A248' },
+  { label: 'Supabase',      logo: 'https://cdn.simpleicons.org/supabase/3FCF8E' },
+  { label: 'Firebase',      logo: 'https://cdn.simpleicons.org/firebase/FFCA28' },
+  { label: 'CoinGecko',     logo: 'https://cdn.simpleicons.org/coingecko/8BC53F' },
+  { label: 'Ethereum',      logo: 'https://cdn.simpleicons.org/ethereum/3C3C3D' },
+  { label: 'Twilio',        logo: 'https://cdn.simpleicons.org/twilio/F22F46' },
+  { label: 'Sentry',        logo: 'https://cdn.simpleicons.org/sentry/362D59' },
+  { label: 'Datadog',       logo: 'https://cdn.simpleicons.org/datadog/632CA6' },
+  { label: 'Grafana',       logo: 'https://cdn.simpleicons.org/grafana/F46800' },
+  { label: 'ElevenLabs',    logo: 'https://cdn.simpleicons.org/elevenlabs' },
+  { label: 'Pinecone',      logo: 'https://cdn.simpleicons.org/pinecone' },
+  { label: 'LangChain',     logo: 'https://cdn.simpleicons.org/langchain/1C3C3C' },
+  { label: 'Stability AI',  logo: 'https://cdn.simpleicons.org/stabilityai' },
+  { label: 'Plaid',         logo: 'https://cdn.simpleicons.org/plaid' },
+  { label: 'Shopify',       logo: 'https://cdn.simpleicons.org/shopify/7AB55C' },
+  { label: 'Zapier',        logo: 'https://cdn.simpleicons.org/zapier/FF4A00' },
+];
+
+function initIntegrationSlider() {
+  const slider = document.getElementById('integration-slider');
+  const track  = document.getElementById('integration-track');
+  if (!slider || !track) return;
+
+  const pillHTML = SLIDER_INTEGRATIONS.map(i =>
+    `<span class="integration-pill"><img src="${i.logo}" alt="" width="16" height="16" loading="lazy">${i.label}</span>`
+  ).join('');
+  track.innerHTML = pillHTML + pillHTML;          // duplicate for seamless loop
+
+  let speed = 0.5;
+  let isDragging = false;
+  let startX = 0, startScroll = 0;
+
+  function animate() {
+    if (!isDragging) {
+      slider.scrollLeft += speed;
+      if (slider.scrollLeft >= track.scrollWidth / 2) {
+        slider.scrollLeft -= track.scrollWidth / 2;
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  slider.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.pageX;
+    startScroll = slider.scrollLeft;
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    slider.scrollLeft = startScroll - (e.pageX - startX);
+  });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  slider.addEventListener('touchstart', e => {
+    isDragging = true;
+    startX = e.touches[0].pageX;
+    startScroll = slider.scrollLeft;
+  }, { passive: true });
+  slider.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    slider.scrollLeft = startScroll - (e.touches[0].pageX - startX);
+  }, { passive: true });
+  slider.addEventListener('touchend', () => { isDragging = false; });
+
+  slider.addEventListener('mouseenter', () => { speed = 0.2; });
+  slider.addEventListener('mouseleave', () => { speed = 0.5; });
+
+  requestAnimationFrame(animate);
+}
 
 /* ══════════════════════════════════════
    Init
@@ -137,6 +249,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadSkillsLibrary();
   loadPersona();
   loadMemoryViewer();
+  refreshBuiltinsStatus();
+  initIntegrationSlider();
+  setInterval(refreshBuiltinsStatus, 12000);
 
   // AMI Tools quick access links
   const toolAgent = document.getElementById('tool-link-agent');
@@ -180,8 +295,12 @@ function renderShortcuts(shortcuts) {
     const a = document.createElement('a');
     a.className = 'shortcut-tile';
     a.href = s.url;
+    const isUrl = s.icon && (s.icon.startsWith('http') || s.icon.startsWith('icons/'));
+    const iconContent = isUrl
+      ? `<img src="${s.icon}" alt="${s.label}" width="20" height="20">`
+      : s.icon;
     a.innerHTML = `
-      <div class="shortcut-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="shortcut-icon" style="background:${s.bg}">${iconContent}</div>
       <span class="shortcut-label">${s.label}</span>
     `;
     dom.quickLinksGrid.appendChild(a);
@@ -195,6 +314,69 @@ function renderStats() {
   dom.statTasks.textContent = stats.tasks;
   dom.statPages.textContent = stats.pages;
   dom.statCrons.textContent = crons.length;
+}
+
+async function getExtensionIdByName(name) {
+  if (extIdCache[name]) return extIdCache[name];
+  if (typeof chrome === 'undefined' || !chrome.management) return null;
+
+  try {
+    const all = await chrome.management.getAll();
+    const found = all.find((e) => e.enabled && e.name === name);
+    const id = found ? found.id : null;
+    if (id) extIdCache[name] = id;
+    return id;
+  } catch {
+    return null;
+  }
+}
+
+function sendToExtension(extId, message) {
+  return new Promise((resolve) => {
+    if (!extId || typeof chrome === 'undefined' || !chrome.runtime) {
+      resolve(null);
+      return;
+    }
+    chrome.runtime.sendMessage(extId, message, (res) => {
+      if (chrome.runtime.lastError) {
+        resolve(null);
+        return;
+      }
+      resolve(res || null);
+    });
+  });
+}
+
+async function refreshBuiltinsStatus() {
+  // AMI Shield
+  const shieldId = await getExtensionIdByName(BUILTIN_EXT_NAMES.shield);
+  const shieldStats = await sendToExtension(shieldId, { type: 'GET_STATS', tabId: -1 });
+  dom.statAdsBlocked.textContent = String(shieldStats?.totalBlocked ?? 0);
+
+  // TeachAnAgent
+  const recorderId = await getExtensionIdByName(BUILTIN_EXT_NAMES.recorder);
+  const recorderState = await sendToExtension(recorderId, { type: 'teachanagent-get-state' });
+  const stateRaw = recorderState?.state || 'idle';
+  const stateMap = {
+    recording: 'Recording',
+    paused: 'Paused',
+    idle: 'Idle',
+  };
+  dom.statRecorderState.textContent = stateMap[stateRaw] || 'Idle';
+  dom.statRecorderEvents.textContent = String(recorderState?.eventCount ?? 0);
+
+  // AMI Rewards
+  const rewardsId = await getExtensionIdByName(BUILTIN_EXT_NAMES.rewards);
+  const rewardsState = await sendToExtension(rewardsId, { type: 'GET_REWARDS_STATUS' });
+  if (!rewardsState) {
+    dom.statRewardsState.textContent = 'SOON';
+  } else if (rewardsState.status === 'coming_soon') {
+    dom.statRewardsState.textContent = 'SOON';
+  } else if (rewardsState.enrolled) {
+    dom.statRewardsState.textContent = `Active (${rewardsState.balance || 0})`;
+  } else {
+    dom.statRewardsState.textContent = 'Available';
+  }
 }
 
 /* ══════════════════════════════════════

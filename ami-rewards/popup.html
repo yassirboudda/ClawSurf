@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --purple: #7c3aed; --purple-lt: #ede9fe; --purple-dark: #5b21b6;
+      --gold: #f59e0b; --gold-lt: #fef3c7;
+      --text: #1e1b4b; --text-sec: #6b7280;
+      --bg: #faf5ff; --card: #fff;
+      --border: #e9d5ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 340px; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    .header { padding: 20px; text-align: center; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; }
+    .header h1 { font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .header .star-icon { width: 24px; height: 24px; }
+    .header p { font-size: 12px; opacity: .85; margin-top: 4px; }
+
+    .content { padding: 16px; }
+
+    .balance-card { background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 16px; position: relative; overflow: hidden; }
+    .balance-card .soon-overlay { position: absolute; inset: 0; background: rgba(255,255,255,.85); backdrop-filter: blur(4px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; }
+    .soon-badge { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 20px; font-weight: 900; letter-spacing: 4px; padding: 10px 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(124,58,237,.3); }
+    .soon-sub { font-size: 11px; color: var(--text-sec); margin-top: 8px; font-weight: 600; }
+    .balance-val { font-size: 32px; font-weight: 900; color: var(--purple-dark); }
+    .balance-label { font-size: 11px; color: var(--text-sec); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+    .features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .feature { display: flex; align-items: flex-start; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .feature-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .feature-icon.earn { background: var(--gold-lt); }
+    .feature-icon.perks { background: var(--purple-lt); }
+    .feature-icon.privacy { background: #d1fae5; }
+    .feature h4 { font-size: 12px; font-weight: 700; }
+    .feature p { font-size: 11px; color: var(--text-sec); line-height: 1.4; margin-top: 2px; }
+
+    .cta-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: not-allowed; opacity: .6; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; position: relative; }
+    .cta-btn .soon-tag { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.3); padding: 2px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+
+    .footer { padding: 12px 16px; border-top: 1px solid var(--border); text-align: center; }
+    .footer p { font-size: 10px; color: var(--text-sec); line-height: 1.5; }
+    .footer a { color: var(--purple); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      AMI Rewards
+    </h1>
+    <p>Earn while you browse privately</p>
+  </div>
+
+  <div class="content">
+    <div class="balance-card">
+      <div class="soon-overlay">
+        <span class="soon-badge">SOON</span>
+        <span class="soon-sub">Rewards program launching Q3 2026</span>
+      </div>
+      <div class="balance-val">0.00 AMI</div>
+      <div class="balance-label">Estimated Rewards</div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon earn">💰</div>
+        <div>
+          <h4>Get paid for private ads</h4>
+          <p>Choose to view privacy-respecting ads and earn AMI tokens. Ads only show when you opt in.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon perks">🎁</div>
+        <div>
+          <h4>Special benefits & discounts</h4>
+          <p>Redeem rewards for premium features, partner discounts, and exclusive AMI ecosystem perks.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon privacy">🔒</div>
+        <div>
+          <h4>Your data stays yours</h4>
+          <p>All matching happens on your device. No personal data leaves your browser. Ever.</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta-btn" disabled>
+      Start Earning
+      <span class="soon-tag">SOON</span>
+    </button>
+  </div>
+
+  <div class="footer">
+    <p>AMI Rewards respects your privacy. No tracking. No data collection.<br>
+    <a href="#">Learn more about AMI Rewards</a></p>
+  </div>
+</body>
+</html>

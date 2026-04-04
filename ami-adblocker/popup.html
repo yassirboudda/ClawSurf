@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --purple: #7c3aed; --purple-lt: #ede9fe;
+      --green: #10b981; --red: #ef4444;
+      --text: #1e1b4b; --text-sec: #6b7280;
+      --bg: #faf5ff; --card: #fff;
+      --border: #e9d5ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { width: 320px; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--border); }
+    .header h1 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .header .shield-icon { width: 24px; height: 24px; color: var(--purple); }
+    .toggle-wrap { display: flex; align-items: center; gap: 8px; }
+    .toggle-label { font-size: 11px; color: var(--text-sec); font-weight: 600; }
+    .toggle { position: relative; width: 40px; height: 22px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider { position: absolute; inset: 0; background: #ddd; border-radius: 11px; cursor: pointer; transition: .2s; }
+    .toggle .slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 2px; bottom: 2px; background: #fff; border-radius: 50%; transition: .2s; }
+    .toggle input:checked + .slider { background: var(--green); }
+    .toggle input:checked + .slider::before { transform: translateX(18px); }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 16px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 8px; text-align: center; }
+    .stat-val { display: block; font-size: 24px; font-weight: 800; color: var(--purple); line-height: 1; }
+    .stat-label { display: block; font-size: 10px; color: var(--text-sec); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+    .page-stat { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px 16px; font-size: 13px; color: var(--text-sec); }
+    .page-stat strong { color: var(--purple); font-size: 18px; }
+
+    .footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .footer a { font-size: 11px; color: var(--purple); text-decoration: none; font-weight: 600; }
+    .footer a:hover { text-decoration: underline; }
+    .badge-version { font-size: 10px; color: var(--text-sec); background: var(--purple-lt); padding: 2px 8px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>
+      <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      AMI Shield
+    </h1>
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="status-text">ON</span>
+      <label class="toggle">
+        <input type="checkbox" id="shield-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-val" id="total-blocked">0</span>
+      <span class="stat-label">Total Blocked</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="ads-blocked">0</span>
+      <span class="stat-label">Ads</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="trackers-blocked">0</span>
+      <span class="stat-label">Trackers</span>
+    </div>
+  </div>
+
+  <div class="page-stat">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+    <span>This page: <strong id="page-blocked">0</strong> blocked</span>
+  </div>
+
+  <div class="footer">
+    <span class="badge-version">v1.0</span>
+    <a href="#" id="reset-stats">Reset stats</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

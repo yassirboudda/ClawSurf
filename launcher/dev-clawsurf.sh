@@ -9,9 +9,10 @@ EXT_RELAY="$REPO_DIR/extension"
 EXT_TEACH="$REPO_DIR/teachanagent"
 EXT_DEVTOOLS_MCP="$REPO_DIR/devtools-mcp"
 EXT_HUB="$REPO_DIR/clawsurf-hub"
-# Do not pass a URL — let the clawsurf-hub extension newtab override
-# provide the AMI Browser hub page as the default startup page.
-URL="${1:-}"
+EXT_ADBLOCK="$REPO_DIR/ami-adblocker"
+EXT_WALLET="$REPO_DIR/ami-wallet"
+EXT_REWARDS="$REPO_DIR/ami-rewards"
+URL="${1:-chrome://newtab}"
 PORTS=(18789 18792 18800 9223)
 
 mkdir -p "$PROFILE_DIR"
@@ -54,7 +55,7 @@ ARGS=(
 
 # Collect extensions to load
 EXT_LIST=""
-for ext in "$EXT_RELAY" "$EXT_TEACH" "$EXT_DEVTOOLS_MCP" "$EXT_HUB"; do
+for ext in "$EXT_RELAY" "$EXT_TEACH" "$EXT_DEVTOOLS_MCP" "$EXT_HUB" "$EXT_ADBLOCK" "$EXT_WALLET" "$EXT_REWARDS"; do
   if [[ -d "$ext" ]]; then
     if [[ -n "$EXT_LIST" ]]; then
       EXT_LIST="$EXT_LIST,$ext"
@@ -178,11 +179,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [[ -n "$URL" ]]; then
-  /snap/bin/chromium "${ARGS[@]}" "$URL" &
-else
-  /snap/bin/chromium "${ARGS[@]}" &
-fi
+/snap/bin/chromium "${ARGS[@]}" "$URL" &
 BROWSER_PID=$!
 
 # Close options tab in background so it doesn't block
