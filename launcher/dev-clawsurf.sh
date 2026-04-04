@@ -4,7 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-PROFILE_DIR="$HOME/snap/chromium/common/ami-browser-profile"
+AMI_BROWSER="$HOME/.local/lib/ami-browser/ami-browser"
+PROFILE_DIR="$HOME/.local/share/ami-browser/dev-profile"
 EXT_RELAY="$REPO_DIR/extension"
 EXT_TEACH="$REPO_DIR/teachanagent"
 EXT_DEVTOOLS_MCP="$REPO_DIR/devtools-mcp"
@@ -179,7 +180,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-/snap/bin/chromium "${ARGS[@]}" "$URL" &
+"$AMI_BROWSER" "${ARGS[@]}" "$URL" &
 BROWSER_PID=$!
 
 # Close options tab in background so it doesn't block
